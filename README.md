@@ -1,5 +1,5 @@
-# Team-C
-Repository for work of Team Cramorant
+# Team Cramorant
+Pokedex Entry: Its throat is clearly not wide enough to swallow a Pikachu, and yet Cramorant makes no move to release its catch.
 
 # Members
 Alex: Project Manager  
