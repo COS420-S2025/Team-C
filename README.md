@@ -24,3 +24,10 @@ Some students have trouble keeping assignment due dates organized and lack a sch
 
 ## Problem Statement 2:
 Students prefer to have a good schedule with their class due dates lined up. Since classes have different due dates and times, it can be difficult for a student to keep track of their assignment progress. In college settings, many classes use online resources to keep track of due dates, and using an online planner can be easy to connect to other online sources. How can we streamline the connection between due dates and planning to help students succeed?
+
+
+
+
+
+
+### "That's a project manager problem."
