@@ -1,0 +1,34 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app h1 {
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.app-button {
+  padding: 0.6rem 1.25rem;
+  font-size: 12rem;
+  font-weight: 500;
+  color: var(--btn-text-color, #2626b0);
+  background: var(--btn-bg, #c41717);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.app-button:hover {
+  background: var(--btn-hover-bg, #077d92);
+  transform: translateY(-1px);
+}
+
+.app-button:active {
+  background: var(--btn-active-bg, #ac0f0f);
+  transform: translateY(0);
+}
