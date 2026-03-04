@@ -1,4 +1,6 @@
-* {
+*,
+::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -8,8 +10,10 @@ body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: #1a1a2e;
   color: #eee;
 }
