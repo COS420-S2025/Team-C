@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "./Account.css";
 
 export default function Account(): React.JSX.Element {
   return (
