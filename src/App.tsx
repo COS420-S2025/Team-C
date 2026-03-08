@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Account from "./pages/account/account";
 import Signup from "./pages/account/signup";
-import Login from "./pages/account/login";
-import Navbar from "./components/navbar/navbar";
+import LoginPage from "./pages/account/login";
+import Navbar from "./components/Navbar/Navbar";
 
 function App(): React.JSX.Element {
+  const [token, setToken] = useState();
+
   return (
     <div className="app">
       <BrowserRouter>
@@ -18,7 +20,10 @@ function App(): React.JSX.Element {
           <Route path="/" element={<Home />} />
           <Route path="/account" element={<Account />} />
           <Route path="/account/sign-up" element={<Signup />} />
-          <Route path="/account/log-in" element={<Login />} />
+          <Route
+            path="/account/log-in"
+            element={<LoginPage setToken={setToken} />}
+          />
         </Routes>
       </BrowserRouter>
     </div>
