@@ -5,16 +5,16 @@ export default function Navbar() {
     <div className="app-navbar">
       <nav>
         <ul className="app-navbar-list">
-          <Link to="/" className="app-navbar-item">
+          <Link to="/home" className="app-navbar-item">
             Home
           </Link>
           <Link to="/search" className="app-navbar-item">
             Search
           </Link>
-          <Link to="/cards" className="app-navbar-item">
+          <Link to="/all" className="app-navbar-item">
             My Cards
           </Link>
-          <Link to="/collections" className="app-navbar-item">
+          <Link to="/collection" className="app-navbar-item">
             Collections
           </Link>
         </ul>
