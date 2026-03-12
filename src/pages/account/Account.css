@@ -1,0 +1,70 @@
+.app-account {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  top: 50vh;
+  left: 50vw;
+}
+
+.app-account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  height: 10%;
+  width: 100%;
+  border-radius: 10px;
+  background: #003b49;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 15px 20px -5px;
+}
+
+.app-account-options {
+  width: 100%;
+  list-style: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-account-item {
+  position: relative;
+  width: 140px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  user-select: none;
+  cursor: pointer;
+  margin: auto;
+  border: 2px solid #f2c75c;
+  overflow: hidden;
+}
+
+.app-account-item {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #f2c75c;
+  z-index: 10;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.app-account-item:hover {
+  color: #003b49;
+}
+
+.app-account-item:before {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 100%;
+  transform: skew(30deg);
+  background: #f2c75c;
+  transition: width 400ms ease;
+}
+
+.app-account-item:hover:before {
+  width: 120%;
+}
