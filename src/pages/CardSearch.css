@@ -1,0 +1,19 @@
+.app-page {
+  padding: 20px;
+  text-align: center;
+}
+
+.search-input {
+  padding: 8px;
+  margin-right: 10px;
+  width: 200px;
+}
+
+.add-button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #e0e0e0;
+}
