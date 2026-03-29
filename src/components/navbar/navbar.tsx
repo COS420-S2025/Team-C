@@ -1,14 +1,25 @@
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom";
 import "./Navbar.css";
-import Account from "../../pages/account/account";
+import Account from "../../pages/AccountPage";
 import Collection from "../../pages/CardCollection";
 import Search from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
+import { User } from "../../interfaces/User";
+import Login from "../Login/Login";
+
+export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
+  return (
+    <div>
+      {currentUser ? `Signed in as: ${currentUser.name}` : "Not Signed In"}
+    </div>
+  );
+};
 
 export default function Navbar(): React.JSX.Element {
   // Stores all cards in the collection
   const [cards, setCards] = useState<any[]>([]);
+  const [userData, setUserData] = useState<User | null>(null);
 
   // Adds a card
   const addCard = (card: any) => {
@@ -21,7 +32,7 @@ export default function Navbar(): React.JSX.Element {
   };
 
   return (
-    <BrowserRouter>
+    <Router>
       <div className="app-navbar">
         <nav>
           <ul className="app-navbar-list">
@@ -37,13 +48,17 @@ export default function Navbar(): React.JSX.Element {
             <Link to="/collection" className="app-navbar-item">
               Collections
             </Link>
-            <Link to="/account" className="app-navbar-item">
-              Account
-            </Link>
+            {userData ? (
+              <Link to="/account" className="app-navbar=item" />
+            ) : (
+              <Login setUserData={setUserData} />
+            )}
+            <SignedIn currentUser={userData} />
           </ul>
         </nav>
       </div>
 
+      {/* Routes */}
       <Routes>
         <Route path="/home" element={<Home />} />
 
@@ -58,6 +73,6 @@ export default function Navbar(): React.JSX.Element {
 
         <Route path="/all" element={<Home />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
