@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Collection from "./pages/CardCollection";
 import Search from "./pages/CardSearch";
-import Navbar from "./components/navbar/navbar";
+import Navbar from "./components/Navbar/Navbar";
 
 function App() {
   // Stores all cards in the collection
