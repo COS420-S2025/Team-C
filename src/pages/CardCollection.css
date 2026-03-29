@@ -1,16 +1,8 @@
-.collection-container {
-    padding: 20px;
-}
-
 .card-grid {
     display: grid;
-
-    /* Always 5 cards per row */
-    grid-template-columns: repeat(5, 1fr);
-
     gap: 20px;
+    padding: 20px;
 
-    /* Allows vertical scrolling if many cards */
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -18,15 +10,49 @@
 .card {
     position: relative;
 
-    background-color: white;
+    padding: 10px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     border: 2px solid black;
     border-radius: 10px;
 
-    height: 150px;
+    background-color: transparent;
+    overflow: hidden;
+}
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.card img {
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    display: block;
+}
+
+.card p {
+    margin: 5px 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.card-meta {
+    font-size: 12px;
+    color: gray;
+}
+
+.card-count {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+
+    background: transparent;
+    color: white;
+
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 8px;
 }
 
 .remove-button {
@@ -35,13 +61,13 @@
     right: 5px;
 
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 1px 1px;
 
-    background-color: red;
-    color: white;
+    background-color: light;
+    color: black;
     border: none;
     border-radius: 4px;
+    background-color: lightgray;
 
     cursor: pointer;
 }
-
