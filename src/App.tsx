@@ -7,7 +7,6 @@ import Search from "./pages/CardSearch";
 import Navbar from "./components/navbar/navbar";
 
 function App() {
-
   // Stores all cards in the collection
   const [cards, setCards] = useState<any[]>([]);
 
@@ -33,10 +32,7 @@ function App() {
           element={<Collection cards={cards} removeCard={removeCard} />}
         />
 
-        <Route
-          path="/search"
-          element={<Search addCard={addCard} />}
-        />
+        <Route path="/search" element={<Search addCard={addCard} />} />
 
         <Route path="/all" element={<Home />} />
       </Routes>

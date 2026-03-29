@@ -24,4 +24,7 @@ Trading card collectors enjoy having organized collections, which can be tedious
 + In directory, run `npm install`.
 + Then, run `npm start` to launch the application.
 
+# Current State:
+The app is still in early development as of 03.12.2026. Do not expect full functionality; some parts may be inoperable. Some current features in development include adding a card to your collection, and some UI aspects such as a navbar.
+
 ### "That's a project manager problem."

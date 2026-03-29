@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import "./Navbar.css";
 
-export default function Navbar() {
+export default function Navbar(): React.JSX.Element {
   return (
     <div className="app-navbar">
       <nav>
@@ -17,13 +18,8 @@ export default function Navbar() {
           <Link to="/collection" className="app-navbar-item">
             Collections
           </Link>
-        </ul>
-        <ul>
-          <Link to="/sign-up" className="app-navbar-item">
-            Sign Up
-          </Link>
-          <Link to="/log-in" className="app-navbar-item">
-            Log In
+          <Link to="/account" className="app-navbar-item">
+            Account
           </Link>
         </ul>
       </nav>
