@@ -136,3 +136,32 @@ html, body {
   margin: 0;
   list-style: none;
 }
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #eee;
+}
+
+.thumb {
+  width: 40px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.types {
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+}
+
+.type-icon {
+  width: 20px;
+  height: 20px;
+}

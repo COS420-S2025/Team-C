@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Collection from "./pages/CardCollection";
 import Search from "./pages/CardSearch";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/navbar";
 
 function App() {
   // Stores all cards in the collection
@@ -27,14 +27,23 @@ function App() {
       <Routes>
         <Route path="/home" element={<Home />} />
 
-        <Route
-          path="/collection"
-          element={<Collection cards={cards} removeCard={removeCard} />}
-        />
-
-        <Route path="/search" element={<Search addCard={addCard} />} />
-
-        <Route path="/all" element={<Home />} />
+      <Route path="/collection" element={
+          <Collection
+            cards={cards}
+            addCard={addCard}
+            removeCard={removeCard}
+          />
+        }
+      />
+      <Route path="/search" element={
+          <Search
+            cards={cards}
+            addCard={addCard}
+            removeCard={removeCard}
+          />
+        }
+      />
+      <Route path="/all" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

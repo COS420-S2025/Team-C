@@ -1,3 +1,6 @@
+/* ==========================
+   BACKDROP
+   ========================== */
 .window-backdrop {
   position: fixed;
   top: 0;
@@ -11,20 +14,24 @@
   z-index: 200;
 }
 
+/* ==========================
+   WINDOW CONTENT
+   ========================== */
 .window-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  max-width: 400px;
-  text-align: center;
+  max-width: 800px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  color: black; /* All text in black */
 }
 
-.window-image {
-  max-width: 100%;
-  margin: 10px 0;
-}
-
+/* ==========================
+   CLOSE BUTTON
+   ========================== */
 .window-close {
   position: absolute;
   top: 10px;
@@ -35,8 +42,84 @@
   cursor: pointer;
 }
 
-.window-controls button {
-  margin: 5px;
+/* ==========================
+   WINDOW GRID (image + info)
+   ========================== */
+.window-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* ==========================
+   LEFT PANEL (image)
+   ========================== */
+.left-panel img {
+  max-width: 300px;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* ==========================
+   RIGHT PANEL (info + controls)
+   ========================== */
+.right-panel h2 {
+  margin: 0;
+  color: black;
+}
+
+.right-panel label {
+  font-weight: bold;
+  color: black;
+}
+
+.right-panel select {
+  width: 100%;
+  margin: 5px 0 10px 0;
+  padding: 5px;
+}
+
+/* ==========================
+   SET NAME / RARITY TEXT
+   ========================== */
+.set-name, .rarity {
+  color: black;
+  margin: 2px 0;
+}
+
+/* ==========================
+   QUANTITY STEPPER
+   ========================== */
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.count {
+  min-width: 30px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.minus {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
   padding: 8px 12px;
   cursor: pointer;
+  border-radius: 5px;
 }
+
+.plus {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.minus:hover { background-color: #cc0000; }
+.plus:hover { background-color: #3e8e41; }
