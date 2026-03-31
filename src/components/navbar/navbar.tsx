@@ -7,6 +7,12 @@ import Home from "../../pages/home";
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
 import Login from "../Login/Login";
+import Signup from "../Signup/Signup";
+
+export type AccountProps = {
+  setUserData: (userData: User | null) => void;
+  userData: User | null;
+};
 
 export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
   return (
@@ -48,10 +54,13 @@ export default function Navbar(): React.JSX.Element {
             <Link to="/collection" className="app-navbar-item">
               Collections
             </Link>
-            <Link to="/login" className="app-navbar-item">
-              Log In
-            </Link>
-            <SignedIn currentUser={userData} />
+            {!userData ? (
+              <Link to="/login" className="app-navbar-item">
+                Log In
+              </Link>
+            ) : (
+              <SignedIn currentUser={userData} />
+            )}
           </ul>
         </nav>
       </div>
@@ -59,6 +68,7 @@ export default function Navbar(): React.JSX.Element {
       {/* Routes */}
       <Routes>
         <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
 
         <Route
           path="/collection"
@@ -71,7 +81,15 @@ export default function Navbar(): React.JSX.Element {
 
         <Route path="/all" element={<Home />} />
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login userData={userData} setUserData={setUserData} />}
+        />
+
+        <Route
+          path="/signup"
+          element={<Signup userData={userData} setUserData={setUserData} />}
+        />
       </Routes>
     </Router>
   );
