@@ -1,104 +1,131 @@
-import React from "react";
-import "./Login.css";
-import { User } from "../../interfaces/User";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import { Auth, signInWithPopup } from "firebase/auth";
-import { auth, db, provider } from "../../firebase-config";
+import React, { useState } from "react";
 import {
-  addDoc,
-  collection,
-  CollectionReference,
-  DocumentData,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-async function createUser({
-  auth,
-  c,
-}: {
-  auth: Auth;
-  c: CollectionReference<DocumentData>;
-}) {
-  if (
-    !auth.currentUser ||
-    !auth.currentUser.emailVerified ||
-    !auth.currentUser.email
-  ) {
-    return;
-  }
+const Login = () => {
+  const auth = getAuth();
+  const navigate = useNavigate();
 
-  const user = {
-    uid: auth.currentUser.uid,
-    name: "",
+  const [authing, setAuthing] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  const signInWithGoogle = () => {
+    setAuthing(true);
+
+    // use firebase to sign in
+    signInWithPopup(auth, new GoogleAuthProvider())
+      .then((response) => {
+        console.log(response.user.uid);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+        setAuthing(false);
+      });
   };
 
-  await addDoc(c, user);
-}
+  const signInWithEmail = () => {
+    setAuthing(true);
+    setError("");
 
-export async function firebaseUser({
-  auth,
-  setUserData,
-}: {
-  auth: Auth;
-  setUserData: (userData: User | null) => void;
-}) {
-  const c = collection(db, "users");
-  const user = await getDocs(
-    query(c, where("uid", "==", auth.currentUser?.uid)),
-  );
+    // use firebase to sign in
+    signInWithEmailAndPassword(auth, email, password)
+      .then((response) => {
+        console.log(response.user.uid);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+        setError(error.message);
+        setAuthing(false);
+      });
+  };
 
-  if (user.size === 0) {
-    await createUser({ auth, c });
-  }
-
-  if (
-    auth.currentUser &&
-    auth.currentUser.email &&
-    auth.currentUser.emailVerified
-  ) {
-    setUserData({
-      uid: auth.currentUser.uid,
-      name: auth.currentUser.displayName,
-    });
-    console.log(
-      `Firebase user ${auth.currentUser.displayName} created with UUID ${auth.currentUser.uid}`,
-    );
-  }
-}
-
-function GoogleLogin({
-  setUserData,
-  nav,
-}: {
-  setUserData: (userData: User | null) => void;
-  nav: NavigateFunction;
-}) {
-  signInWithPopup(auth, provider).then((result) => {
-    localStorage.setItem("isAuth", "true");
-    firebaseUser({ auth, setUserData }).then((result) => {
-      console.log("User Set");
-      console.log(auth.currentUser?.uid);
-    });
-    nav("/home");
-  });
-}
-
-export default function Login({
-  setUserData,
-}: {
-  setUserData: (userData: User | null) => void;
-}) {
-  let nav = useNavigate();
   return (
-    <div
-      className="app-navbar-item"
-      onClick={() => {
-        GoogleLogin({ setUserData, nav });
-      }}
-    >
-      Log In
+    <div className="w-full h-screen flex">
+      {/* Left side */}
+      <div className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center"></div>
+
+      {/* Right side */}
+      <div className="w-1/2 h-full flex flex-col bg-[#1a1a1a] p-20 justify-center">
+        <div className="w-full flex flex-col max-w-[450px] mx-auto">
+          {/* Header */}
+          <div className="w-full flex flex-col mb-10 text-white">
+            <h3 className="text-4xl font-bold mb-2">Login</h3>
+            <p className="text-lg mb-4">
+              Welcome back! Please enter your credentials.
+            </p>
+          </div>
+
+          {/* Email/Password input fields */}
+          <div className="w-full flex flex-col mb-6">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          {/* Login button (Email & Password) */}
+          <div className="w-full flex flex-col mb-4">
+            <button
+              className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+              onClick={signInWithEmail}
+              disabled={authing}
+            >
+              Log In With Email and Password
+            </button>
+          </div>
+
+          {/* Display potential error */}
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          {/* Sign-in option divider */}
+          <div className="w-full flex items-center justify-center relative py-4">
+            <div className="w-full h-[1px] bg-gray-500"></div>
+            <p className="text-lg absolute text-gray-500 bg-[#1a1a1a] px-2">
+              OR
+            </p>
+          </div>
+
+          {/* Login button (Google) */}
+          <button
+            className="w-full bg-white text-black font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer mt-7"
+            onClick={signInWithGoogle}
+            disabled={authing}
+          >
+            Log In With Google
+          </button>
+        </div>
+
+        {/* Signup page */}
+        <div className="w-full flex items-center justify-center mt-10">
+          <p className="text-sm font-normal text-gray-400">
+            Don't have an account?{" "}
+            <span className="font-semibold text-white cursor-pointer underline">
+              <a href="/signup">Sign Up</a>
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;
