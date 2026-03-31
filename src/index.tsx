@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,13 +20,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth();
+const googleAuthProvider = new GoogleAuthProvider();
 
 // Is local?
 if (window.location.hostname === "localhost") {
   connectFirestoreEmulator(db, "localhost", 8080);
 }
-
-export { app, db };
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -40,3 +41,5 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+export { app, db, auth, googleAuthProvider };
