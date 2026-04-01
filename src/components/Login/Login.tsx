@@ -5,9 +5,8 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { db, googleAuthProvider } from "../..";
+import { googleAuthProvider } from "../..";
 import type { AccountProps } from "../Navbar/Navbar";
-import { addDoc, collection } from "firebase/firestore";
 
 const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
   const auth = getAuth();
@@ -31,11 +30,6 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
           name: response.user.displayName,
           email: response.user.email,
         });
-        addDoc(collection(db, "users"), {
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
         navigate("/");
       })
       .catch((error) => {
@@ -54,11 +48,6 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
         console.log(response.user.uid);
         setUserData({
           ...userData,
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
-        addDoc(collection(db, "users"), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
