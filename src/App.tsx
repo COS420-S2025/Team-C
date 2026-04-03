@@ -1,9 +1,4 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Home from "./pages/home";
-import Collection from "./pages/CardCollection";
-import Search from "./pages/CardSearch";
+import React from "react";
 import Navbar from "./components/Navbar/Navbar";
 
 function App() {
