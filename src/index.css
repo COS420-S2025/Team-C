@@ -1,15 +1,10 @@
-*,
-::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   max-height: 100vh;
-  display: flex;
-  align-items: center;
+  max-width: 100vw;
   font-family:
     system-ui,
     -apple-system,
