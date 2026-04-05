@@ -5,7 +5,11 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {
+  connectAuthEmulator,
+  getAuth,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -20,11 +24,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth();
 const googleAuthProvider = new GoogleAuthProvider();
+const auth = getAuth();
 
-// Is local?
+// From connectAuthEmulator() documentation, function call must
+// immediately follow initializing the auth.
 if (window.location.hostname === "localhost") {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099");
   connectFirestoreEmulator(db, "localhost", 8080);
 }
 
