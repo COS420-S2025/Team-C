@@ -4,7 +4,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { db, googleAuthProvider } from "../..";
 import type { AccountProps } from "../Navbar/Navbar";
 import { addDoc, collection } from "firebase/firestore";
