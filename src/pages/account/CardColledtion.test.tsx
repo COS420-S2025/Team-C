@@ -16,7 +16,13 @@ describe("CardCollection", () => {
       },
     ];
 
-    render(<CardCollection cards={cards} removeCard={jest.fn()} />);
+    render(
+      <CardCollection
+        addCard={jest.fn()}
+        cards={cards}
+        removeCard={jest.fn()}
+      />,
+    );
 
     expect(screen.getByText("Gardevoir")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Gardevoir" })).toBeInTheDocument();
@@ -24,7 +30,9 @@ describe("CardCollection", () => {
 
   /*Test to check if no cards are displayed when there are no cards in the collection*/
   test("shows empty state when no cards are provided", () => {
-    render(<CardCollection cards={[]} removeCard={jest.fn()} />);
+    render(
+      <CardCollection addCard={jest.fn()} cards={[]} removeCard={jest.fn()} />,
+    );
 
     expect(screen.getByText("No cards added yet!")).toBeInTheDocument();
   });
@@ -40,7 +48,13 @@ describe("CardCollection", () => {
     };
     const removeCard = jest.fn();
 
-    render(<CardCollection cards={[card]} removeCard={removeCard} />);
+    render(
+      <CardCollection
+        addCard={jest.fn()}
+        cards={[card]}
+        removeCard={removeCard}
+      />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Remove" }));
 
@@ -48,4 +62,3 @@ describe("CardCollection", () => {
     expect(removeCard).toHaveBeenCalledWith(expect.objectContaining(card));
   });
 });
-
