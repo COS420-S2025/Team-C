@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CardSearch.css";
-import CardWindow, { CardVersion } from "../components/CardWindow/CardWindow";
+import CardWindow, {
+  type CardVersion,
+} from "../components/CardWindow/CardWindow";
 import TCGdex, { Query } from "@tcgdex/sdk";
 
 type SearchProps = {
@@ -23,45 +25,42 @@ const Search: React.FC<SearchProps> = ({ cards, addCard, removeCard }) => {
   const [results, setResults] = useState<any[]>([]);
   const [selectedCardName, setSelectedCardName] = useState<string | null>(null);
 
-useEffect(() => {
-  if (!query.trim()) {
-    setResults([]);
-    return;
-  }
-
-  const sdk = new TCGdex("en");
-
-  const debounce = setTimeout(async () => {
-    try {
-      const found = await sdk.card.list(
-        Query.create().like("name", query)
-      );
-
-      const pokemonMap = new Map<string, any>();
-
-      found.forEach((c: any) => {
-        // 🔥 Extract base Pokémon name (first word only)
-        const baseName = c.name.split(" ")[0].toLowerCase();
-
-        // Prefer clean version (no EX/V/etc.)
-        const isVariant = /ex|gx|v|max|vstar|radiant/i.test(c.name);
-
-        if (!pokemonMap.has(baseName) || !isVariant) {
-          pokemonMap.set(baseName, c);
-        }
-      });
-
-      const uniquePokemon = Array.from(pokemonMap.values())
-        .slice(0, 20); // limit results
-
-      setResults(uniquePokemon);
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      return;
     }
-  }, 250);
 
-  return () => clearTimeout(debounce);
-}, [query]);
+    const sdk = new TCGdex("en");
+
+    const debounce = setTimeout(async () => {
+      try {
+        const found = await sdk.card.list(Query.create().like("name", query));
+
+        const pokemonMap = new Map<string, any>();
+
+        found.forEach((c: any) => {
+          // 🔥 Extract base Pokémon name (first word only)
+          const baseName = c.name.split(" ")[0].toLowerCase();
+
+          // Prefer clean version (no EX/V/etc.)
+          const isVariant = /ex|gx|v|max|vstar|radiant/i.test(c.name);
+
+          if (!pokemonMap.has(baseName) || !isVariant) {
+            pokemonMap.set(baseName, c);
+          }
+        });
+
+        const uniquePokemon = Array.from(pokemonMap.values()).slice(0, 20); // limit results
+
+        setResults(uniquePokemon);
+      } catch (err) {
+        console.error(err);
+      }
+    }, 250);
+
+    return () => clearTimeout(debounce);
+  }, [query]);
 
   return (
     <div className="app-page">
