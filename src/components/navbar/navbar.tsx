@@ -72,10 +72,21 @@ export default function Navbar(): React.JSX.Element {
 
         <Route
           path="/collection"
-          element={<Collection cards={cards} removeCard={removeCard} />}
+          element={
+            <Collection
+              cards={cards}
+              removeCard={removeCard}
+              addCard={addCard}
+            />
+          }
         />
 
-        <Route path="/search" element={<Search addCard={addCard} />} />
+        <Route
+          path="/search"
+          element={
+            <Search cards={cards} removeCard={removeCard} addCard={addCard} />
+          }
+        />
 
         <Route path="/account" element={<Account />} />
 

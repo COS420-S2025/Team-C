@@ -8,18 +8,27 @@ export type CardVersion = {
   imageUrl: string;
   set?: string;
   rarity?: string;
+  releaseDate?: string;
 };
 
 type CardWindowProps = {
   cardName: string;
   onClose: () => void;
   addToCollection: (card: CardVersion) => void;
+  removeFromCollection: (card: CardVersion) => void;
+  cards: CardVersion[];
 };
 
-const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose, addToCollection }) => {
+const CardWindow: React.FC<CardWindowProps> = ({
+  cardName,
+  onClose,
+  addToCollection,
+  removeFromCollection,
+  cards,
+}) => {
   const [versions, setVersions] = useState<CardVersion[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
   useEffect(() => {
     const sdk = new TCGdex("en");
@@ -27,23 +36,49 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose, addToCollect
     const fetchVersions = async () => {
       setLoading(true);
       try {
-        const cards = await sdk.card.list(
+        const list = await sdk.card.list(
           Query.create().equal("name", cardName)
         );
 
-        const mapped: CardVersion[] = cards.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          imageUrl: c.getImageURL("high", "png") || "",
-          set: c.set?.name,
-          rarity: c.rarity,
-        }));
+        const fullCards = await Promise.all(
+          list.map((c: any) => sdk.card.get(c.id))
+        );
 
-        setVersions(mapped);
-        setCurrentIndex(0);
+        const cardsWithSetData = await Promise.all(
+          fullCards.map(async (c: any) => {
+            let releaseDate = "1900-01-01";
+
+            if (c.set?.id) {
+              try {
+                const setData = await sdk.set.get(c.set.id);
+
+                if (setData?.releaseDate) {
+                  releaseDate = setData.releaseDate;
+                }
+              } catch {}    
+            }
+
+            return {
+              id: c.id,
+              name: c.name,
+              imageUrl: c.getImageURL("high", "png") || "/fallback.png",
+              set: c.set?.name || "Unknown Set",
+              rarity: c.rarity || "Unknown rarity",
+              releaseDate,
+            };
+          })
+        );
+
+        const sorted = cardsWithSetData.sort(
+          (a, b) =>
+            new Date(b.releaseDate!).getTime() -
+            new Date(a.releaseDate!).getTime()
+        );
+
+        setVersions(sorted);
+        setSelectedCard(sorted[0]);
       } catch (err) {
-        console.error("Error fetching card versions:", err);
-        setVersions([]);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -52,60 +87,50 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose, addToCollect
     fetchVersions();
   }, [cardName]);
 
-  const currentCard = versions[currentIndex];
+  const getCount = (id: string) =>
+    cards.filter((c) => c.id === id).length;
 
   return (
-    <div className="window-backdrop">
-      <div className="window-content">
+    <div className="window-backdrop" onClick={onClose}>
+      <div className="window-content" onClick={(e) => e.stopPropagation()}>
         <button className="window-close" onClick={onClose}>X</button>
 
-        {loading ? (
-          <p>Loading card...</p>
-        ) : versions.length === 0 ? (
-          <p>No versions found for "{cardName}"</p>
+        {loading || !selectedCard ? (
+          <p>Loading...</p>
         ) : (
-          <>
-            <h2>{currentCard.name}</h2>
+          <div className="window-grid">
+            <div className="left-panel">
+              <img src={selectedCard.imageUrl} alt={selectedCard.name} />
+            </div>
 
-            <img
-              src={currentCard.imageUrl}
-              alt={currentCard.name}
-              className="window-image"
-            />
+            <div className="right-panel">
+              <h2>{selectedCard.name}</h2>
 
-            <p>{currentCard.set}</p>
-            <p>{currentCard.rarity}</p>
-
-            <div className="window-controls">
-              {versions.length > 1 && (
-                <>
-                  <button
-                    onClick={() =>
-                      setCurrentIndex((currentIndex - 1 + versions.length) % versions.length)
-                    }
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() =>
-                      setCurrentIndex((currentIndex + 1) % versions.length)
-                    }
-                  >
-                    Next
-                  </button>
-                </>
-              )}
-
-              <button
-                onClick={() => {
-                  addToCollection(currentCard);
-                  onClose();
+              <label>Set:</label>
+              <select
+                value={selectedCard.id}
+                onChange={(e) => {
+                  const found = versions.find(v => v.id === e.target.value);
+                  if (found) setSelectedCard(found);
                 }}
               >
-                Add to Collection
-              </button>
+                {versions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.set} ({c.releaseDate?.slice(0, 4)}) — {c.rarity}
+                  </option>
+                ))}
+              </select>
+
+              <p>{selectedCard.set}</p>
+              <p>{selectedCard.rarity}</p>
+
+              <div className="quantity-stepper">
+                <button onClick={() => removeFromCollection(selectedCard)}>−</button>
+                <span>{getCount(selectedCard.id)}</span>
+                <button onClick={() => addToCollection(selectedCard)}>+</button>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
