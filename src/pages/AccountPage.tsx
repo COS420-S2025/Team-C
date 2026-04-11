@@ -84,36 +84,37 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
               </h3>
               {message && <div className="text-lime-400 mb-4">{message}</div>}
               <h2 className="text-lg mb-4">Configuration:</h2>
-              <div>
-                <input
-                  type="text"
-                  value={newName}
-                  className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
-                  placeholder="New Name"
-                  onChange={handleNameChange}
-                />
-                <button
-                  className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
-                  onClick={handleNameUpdate}
-                >
-                  Change Name
-                </button>
-              </div>
-              <div>
-                <input
-                  type="email"
-                  value={newEmail}
-                  className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
-                  placeholder="New Email"
-                  onChange={handleEmailChange}
-                />
-                <button
-                  className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
-                  onClick={handleEmailUpdate}
-                >
-                  Change Email
-                </button>
-              </div>
+            </div>
+            <div>
+              <input
+                type="text"
+                value={newName}
+                className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+                placeholder="New Name"
+                onChange={handleNameChange}
+              />
+              <button
+                className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+                onClick={handleNameUpdate}
+              >
+                Change Name
+              </button>
+            </div>
+            <div className="my-3"></div>
+            <div>
+              <input
+                type="email"
+                value={newEmail}
+                className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+                placeholder="New Email"
+                onChange={handleEmailChange}
+              />
+              <button
+                className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+                onClick={handleEmailUpdate}
+              >
+                Change Email
+              </button>
             </div>
           </div>
         </div>
