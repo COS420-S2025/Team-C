@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import CardCollection from "../CardCollection";
+import CardCollection from "./CardCollection";
 
 /*Test to check if a card is displayed when card details are provided properly */
 describe("CardCollection", () => {
