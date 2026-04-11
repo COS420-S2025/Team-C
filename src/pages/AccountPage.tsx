@@ -30,6 +30,7 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
           name: newName,
         });
         setUserData({ ...userData, name: newName });
+        setNewName("");
       } catch (e) {
         if (!(e instanceof Error)) {
           throw e;
@@ -57,15 +58,19 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
               </h3>
               <h2 className="text-lg mb-4">Configuration:</h2>
               <div>
-                <p>Update display name:</p>
-
                 <input
                   type="text"
-                  className="text-black"
+                  value={newName}
+                  className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
                   placeholder="New Name"
                   onChange={handleNameChange}
                 />
-                <button onClick={handleNameUpdate}>Change</button>
+                <button
+                  className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+                  onClick={handleNameUpdate}
+                >
+                  Change Name
+                </button>
               </div>
             </div>
           </div>
