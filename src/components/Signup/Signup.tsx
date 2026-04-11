@@ -2,7 +2,7 @@ import { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { auth, db, googleAuthProvider } from "../..";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Signup: React.FC<AccountPageDisplayProps> = ({
@@ -30,8 +30,21 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
     setAuthing(true);
 
     signInWithPopup(auth, googleAuthProvider)
-      .then((response) => {
+      .then(async (response) => {
         console.log(response.user.uid);
+
+        const q = query(
+          collection(db, "users"),
+          where("uid", "==", response.user.uid),
+        );
+        const userSnapshot = await getDocs(q);
+
+        if (userSnapshot.size !== 0) {
+          throw new Error(
+            "An account using this Google account already exists!",
+          );
+        }
+
         AccountProps.setUserData({
           ...AccountProps.userData,
           uid: response.user.uid,
@@ -47,6 +60,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
       })
       .catch((error) => {
         console.error(error);
+        setError(error.message);
         setAuthing(false);
       });
   };
@@ -63,8 +77,19 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
     setError("");
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then((response) => {
+      .then(async (response) => {
         console.log(response.user.uid);
+
+        const q = query(
+          collection(db, "users"),
+          where("uid", "==", response.user.uid),
+        );
+        const userSnapshot = await getDocs(q);
+
+        if (userSnapshot.size !== 0) {
+          throw new Error("You already have an account!");
+        }
+
         AccountProps.setUserData({
           ...AccountProps.userData,
           uid: response.user.uid,
