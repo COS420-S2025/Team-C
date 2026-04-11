@@ -6,10 +6,13 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { db, googleAuthProvider } from "../..";
-import type { AccountProps } from "../Navbar/Navbar";
 import { addDoc, collection } from "firebase/firestore";
+import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
-const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
+const Login: React.FC<AccountPageDisplayProps> = ({
+  AccountProps,
+  setActivateSignup,
+}) => {
   const auth = getAuth();
   const navigate = useNavigate();
 
@@ -18,6 +21,10 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  const handleSignupClick = () => {
+    setActivateSignup(true);
+  };
+
   const signInWithGoogle = () => {
     setAuthing(true);
 
@@ -25,8 +32,8 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
     signInWithPopup(auth, googleAuthProvider)
       .then((response) => {
         console.log(response.user.uid);
-        setUserData({
-          ...userData,
+        AccountProps.setUserData({
+          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
@@ -52,8 +59,8 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((response) => {
         console.log(response.user.uid);
-        setUserData({
-          ...userData,
+        AccountProps.setUserData({
+          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
@@ -143,7 +150,14 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
           <p className="text-sm font-normal text-gray-400">
             Don't have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              <a href="/signup">Sign Up</a>
+              {/* <a href="/account/signup">Sign Up</a> */}
+              <button
+                className="underline"
+                onClick={handleSignupClick}
+                disabled={authing}
+              >
+                Sign Up
+              </button>
             </span>
           </p>
         </div>

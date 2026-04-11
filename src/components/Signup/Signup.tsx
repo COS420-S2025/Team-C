@@ -2,10 +2,13 @@ import { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { auth, db, googleAuthProvider } from "../..";
-import type { AccountProps } from "../Navbar/Navbar";
 import { addDoc, collection } from "firebase/firestore";
+import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
-const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
+const Signup: React.FC<AccountPageDisplayProps> = ({
+  AccountProps,
+  setActivateSignup,
+}) => {
   // Initialize navigation
   const navigate = useNavigate();
 
@@ -16,6 +19,10 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  const handleLoginClick = () => {
+    setActivateSignup(false);
+  };
+
   // Handling signup
 
   // Google
@@ -25,8 +32,8 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
     signInWithPopup(auth, googleAuthProvider)
       .then((response) => {
         console.log(response.user.uid);
-        setUserData({
-          ...userData,
+        AccountProps.setUserData({
+          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
@@ -58,8 +65,8 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((response) => {
         console.log(response.user.uid);
-        setUserData({
-          ...userData,
+        AccountProps.setUserData({
+          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
@@ -156,7 +163,14 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
           <p className="text-sm font-normal text-gray-400">
             Already have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              <a href="/login">Log In</a>
+              {/* <a href="/login">Log In</a> */}
+              <button
+                className="underline"
+                onClick={handleLoginClick}
+                disabled={authing}
+              >
+                Log In
+              </button>
             </span>
           </p>
         </div>

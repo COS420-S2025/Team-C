@@ -1,9 +1,27 @@
-import "./Account.css";
+import { useState } from "react";
+import Login from "../components/Login/Login";
+import Signup from "../components/Signup/Signup";
+import type { AccountProps } from "../components/Navbar/Navbar";
 
-export default function Account(): React.JSX.Element {
-  return (
-    <div className="app-account">
-      <h1>Account Page</h1>
-    </div>
+export type AccountPageDisplayProps = {
+  AccountProps: AccountProps;
+  setActivateSignup: (activateSignup: boolean) => void;
+};
+
+const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
+  const [activateSignup, setActivateSignup] = useState<boolean>(false);
+
+  return !activateSignup ? (
+    <Login
+      AccountProps={{ userData, setUserData }}
+      setActivateSignup={setActivateSignup}
+    />
+  ) : (
+    <Signup
+      AccountProps={{ userData, setUserData }}
+      setActivateSignup={setActivateSignup}
+    />
   );
-}
+};
+
+export default Account;

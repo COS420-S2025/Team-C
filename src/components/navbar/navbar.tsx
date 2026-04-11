@@ -6,8 +6,6 @@ import Search from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
-import Login from "../Login/Login";
-import Signup from "../Signup/Signup";
 
 export type AccountProps = {
   setUserData: (userData: User | null) => void;
@@ -54,13 +52,9 @@ export default function Navbar(): React.JSX.Element {
             <Link to="/collection" className="app-navbar-item">
               Collections
             </Link>
-            {!userData ? (
-              <Link to="/login" className="app-navbar-item">
-                Log In
-              </Link>
-            ) : (
-              <SignedIn currentUser={userData} />
-            )}
+            <Link to="/account" className="app-navbar-item">
+              Account
+            </Link>
           </ul>
         </nav>
       </div>
@@ -88,19 +82,12 @@ export default function Navbar(): React.JSX.Element {
           }
         />
 
-        <Route path="/account" element={<Account />} />
+        <Route
+          path="/account"
+          element={<Account userData={userData} setUserData={setUserData} />}
+        />
 
         <Route path="/all" element={<Home />} />
-
-        <Route
-          path="/login"
-          element={<Login userData={userData} setUserData={setUserData} />}
-        />
-
-        <Route
-          path="/signup"
-          element={<Signup userData={userData} setUserData={setUserData} />}
-        />
       </Routes>
     </Router>
   );
