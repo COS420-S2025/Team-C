@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router";
 import { auth, db, googleAuthProvider } from "../..";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Signup: React.FC<AccountPageDisplayProps> = ({
   AccountProps,
   setActivateSignup,
 }) => {
-  // Initialize navigation
-  const navigate = useNavigate();
-
   // State
   const [authing, setAuthing] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -33,30 +29,26 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
       .then(async (response) => {
         console.log(response.user.uid);
 
-        const q = query(
-          collection(db, "users"),
-          where("uid", "==", response.user.uid),
-        );
-        const userSnapshot = await getDocs(q);
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
 
-        if (userSnapshot.size !== 0) {
+        if (userData) {
           throw new Error(
-            "An account using this Google account already exists!",
+            "An account using this Google account is already registered!",
           );
         }
 
         AccountProps.setUserData({
-          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
@@ -80,28 +72,26 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
       .then(async (response) => {
         console.log(response.user.uid);
 
-        const q = query(
-          collection(db, "users"),
-          where("uid", "==", response.user.uid),
-        );
-        const userSnapshot = await getDocs(q);
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
 
-        if (userSnapshot.size !== 0) {
-          throw new Error("You already have an account!");
+        if (userData) {
+          throw new Error(
+            "An account using this Google account is already registered!",
+          );
         }
 
         AccountProps.setUserData({
-          ...AccountProps.userData,
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
