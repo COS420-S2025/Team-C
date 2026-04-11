@@ -27,8 +27,6 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
 
     signInWithPopup(auth, googleAuthProvider)
       .then(async (response) => {
-        console.log(response.user.uid);
-
         const userRef = doc(db, "users", response.user.uid);
         const userDoc = await getDoc(userRef);
         const userData = userDoc.data();
@@ -70,8 +68,6 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (response) => {
-        console.log(response.user.uid);
-
         const userRef = doc(db, "users", response.user.uid);
         const userDoc = await getDoc(userRef);
         const userData = userDoc.data();

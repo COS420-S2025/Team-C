@@ -23,8 +23,6 @@ const Login: React.FC<AccountPageDisplayProps> = ({
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
       .then(async (response) => {
-        console.log(response.user.uid);
-
         const userRef = doc(db, "users", response.user.uid);
         const userDoc = await getDoc(userRef);
         const userData = userDoc.data();
@@ -53,8 +51,6 @@ const Login: React.FC<AccountPageDisplayProps> = ({
     // use firebase to sign in
     signInWithEmailAndPassword(auth, email, password)
       .then(async (response) => {
-        console.log(response.user.uid);
-
         const userRef = doc(db, "users", response.user.uid);
         const userDoc = await getDoc(userRef);
         const userData = userDoc.data();
