@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { db, googleAuthProvider } from "../..";
-import { addDoc, collection } from "firebase/firestore";
+import { collection, getDocs, where, query } from "firebase/firestore";
 import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Login: React.FC<AccountPageDisplayProps> = ({
@@ -25,20 +25,26 @@ const Login: React.FC<AccountPageDisplayProps> = ({
     setActivateSignup(true);
   };
 
-  const signInWithGoogle = () => {
+  const signInWithGoogle = async () => {
     setAuthing(true);
 
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
-      .then((response) => {
+      .then(async (response) => {
         console.log(response.user.uid);
+
+        const q = query(
+          collection(db, "users"),
+          where("uid", "==", response.user.uid),
+        );
+        const userSnapshot = await getDocs(q);
+
+        if (userSnapshot.size === 0) {
+          throw new Error("Account not found!");
+        }
+
         AccountProps.setUserData({
           ...AccountProps.userData,
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
-        addDoc(collection(db, "users"), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
@@ -47,6 +53,7 @@ const Login: React.FC<AccountPageDisplayProps> = ({
       })
       .catch((error) => {
         console.error(error);
+        setError(error.message);
         setAuthing(false);
       });
   };
@@ -57,15 +64,21 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
     // use firebase to sign in
     signInWithEmailAndPassword(auth, email, password)
-      .then((response) => {
+      .then(async (response) => {
         console.log(response.user.uid);
+
+        const q = query(
+          collection(db, "users"),
+          where("uid", "==", response.user.uid),
+        );
+        const userSnapshot = await getDocs(q);
+
+        if (userSnapshot.size === 0) {
+          throw new Error("Account not found!");
+        }
+
         AccountProps.setUserData({
           ...AccountProps.userData,
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
-        addDoc(collection(db, "users"), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
