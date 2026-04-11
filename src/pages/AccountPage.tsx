@@ -7,11 +7,11 @@ import { db } from "..";
 
 export type AccountPageDisplayProps = {
   AccountProps: AccountProps;
-  setActivateSignup: (activateSignup: boolean) => void;
+  setShowSignup: (showSignup: boolean) => void;
 };
 
 const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
-  const [activateSignup, setActivateSignup] = useState<boolean>(true);
+  const [showSignup, setShowSignup] = useState<boolean>(true);
   const [newName, setNewName] = useState<string>("");
   const [newEmail, setNewEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -111,15 +111,15 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
     );
   }
 
-  return !activateSignup ? (
+  return !showSignup ? (
     <Login
       AccountProps={{ userData, setUserData }}
-      setActivateSignup={setActivateSignup}
+      setShowSignup={setShowSignup}
     />
   ) : (
     <Signup
       AccountProps={{ userData, setUserData }}
-      setActivateSignup={setActivateSignup}
+      setShowSignup={setShowSignup}
     />
   );
 };

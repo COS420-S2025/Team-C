@@ -6,7 +6,7 @@ import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Login: React.FC<AccountPageDisplayProps> = ({
   AccountProps,
-  setActivateSignup,
+  setShowSignup,
 }) => {
   const [authing, setAuthing] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -14,7 +14,7 @@ const Login: React.FC<AccountPageDisplayProps> = ({
   const [error, setError] = useState<string>("");
 
   const handleSignupClick = () => {
-    setActivateSignup(true);
+    setShowSignup(true);
   };
 
   const signInWithGoogle = async () => {

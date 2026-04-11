@@ -6,7 +6,7 @@ import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Signup: React.FC<AccountPageDisplayProps> = ({
   AccountProps,
-  setActivateSignup,
+  setShowSignup,
 }) => {
   // State
   const [authing, setAuthing] = useState<boolean>(false);
@@ -16,7 +16,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
   const [error, setError] = useState<string>("");
 
   const handleLoginClick = () => {
-    setActivateSignup(false);
+    setShowSignup(false);
   };
 
   // Handling signup
