@@ -11,55 +11,70 @@ type SearchProps = {
   removeCard: (card: CardVersion) => void;
 };
 
-const normalizeName = (name: string) => {
-  return name
+const normalize = (name: string) =>
+  name
     .toLowerCase()
-    .replace(/\b(ex|gx|v|max|vstar|radiant|mega|m)\b/g, "")
+    .replace(/\b(ex|gx|v|max|vstar|radiant|mega|tag team)\b/g, "")
     .replace(/[^a-z0-9 ]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-};
+
+const isSpecial = (name: string) =>
+  /\b(ex|gx|v|max|vstar|radiant|mega|tag team)\b/i.test(name);
 
 const Search: React.FC<SearchProps> = ({ cards, addCard, removeCard }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
-  const [selectedCardName, setSelectedCardName] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!query.trim()) {
+    const q = query.toLowerCase().trim();
+
+    if (!q) {
       setResults([]);
       return;
     }
 
     const sdk = new TCGdex("en");
 
-    const debounce = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
-        const found = await sdk.card.list(Query.create().like("name", query));
+        let found: any[] =
+          q.length <= 2
+            ? await sdk.card.list(Query.create())
+            : await sdk.card.list(Query.create().like("name", q));
 
-        const pokemonMap = new Map<string, any>();
+        const map = new Map<string, any>();
 
-        found.forEach((c: any) => {
-          // 🔥 Extract base Pokémon name (first word only)
-          const baseName = c.name.split(" ")[0].toLowerCase();
+        for (const card of found) {
+          const base = normalize(card.name);
+          const existing = map.get(base);
 
-          // Prefer clean version (no EX/V/etc.)
-          const isVariant = /ex|gx|v|max|vstar|radiant/i.test(c.name);
-
-          if (!pokemonMap.has(baseName) || !isVariant) {
-            pokemonMap.set(baseName, c);
+          if (!existing) {
+            map.set(base, card);
+            continue;
           }
-        });
 
-        const uniquePokemon = Array.from(pokemonMap.values()).slice(0, 20); // limit results
+          const existingSpecial = isSpecial(existing.name);
+          const currentSpecial = isSpecial(card.name);
 
-        setResults(uniquePokemon);
+          if (existingSpecial && !currentSpecial) {
+            map.set(base, card);
+          }
+        }
+
+        const unique = Array.from(map.values())
+          .filter((c) => normalize(c.name).startsWith(q))
+          .slice(0, 20);
+
+        setResults(unique);
       } catch (err) {
         console.error(err);
+        setResults([]);
       }
-    }, 250);
+    }, 200);
 
-    return () => clearTimeout(debounce);
+    return () => clearTimeout(timer);
   }, [query]);
 
   return (
@@ -75,43 +90,52 @@ const Search: React.FC<SearchProps> = ({ cards, addCard, removeCard }) => {
 
         {results.length > 0 && (
           <ul className="dropdown">
-            {results.map((card) => (
-              <li
-                key={card.id}
-                onClick={() => setSelectedCardName(card.name)}
-                className="dropdown-item"
-              >
-                {/* Image */}
-                <img
-                  src={card.getImageURL("low", "png")}
-                  alt={card.name}
-                  className="thumb"
-                />
+            {results.map((card) => {
+              const img =
+                card.getImageURL?.("high", "png") ||
+                card.getImageURL?.("low", "png") ||
+                card.getImageURL?.("official", "png") ||
+                "";
 
-                {/* Name */}
-                <span>{card.name.split(" ")[0]}</span>
+              return (
+                <li
+                  key={card.id}
+                  className="dropdown-item"
+                  onClick={() => setSelected(card.name)}
+                >
+                  <img
+                    src={img}
+                    alt={card.name}
+                    className="thumb"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
 
-                {/* Types */}
-                <div className="types">
-                  {card.types?.map((type: string) => (
-                    <img
-                      key={type}
-                      src={`/types/${type}.png`}
-                      alt={type}
-                      className="type-icon"
-                    />
-                  ))}
-                </div>
-              </li>
-            ))}
+                  {/* CLEAN NAME ONLY */}
+                  <span>{card.name.split(" ")[0]}</span>
+
+                  <div className="types">
+                    {card.types?.map((t: string) => (
+                      <img
+                        key={t}
+                        src={`/types/${t}.png`}
+                        alt={t}
+                        className="type-icon"
+                      />
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
 
-      {selectedCardName && (
+      {selected && (
         <CardWindow
-          cardName={selectedCardName}
-          onClose={() => setSelectedCardName(null)}
+          cardName={selected}
+          onClose={() => setSelected(null)}
           addToCollection={addCard}
           removeFromCollection={removeCard}
           cards={cards}

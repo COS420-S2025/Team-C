@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router";
 import { db, googleAuthProvider } from "../..";
-import type { AccountProps } from "../Navbar/Navbar";
+import type { AccountProps } from "../navbar/Navbar";
 import { addDoc, collection } from "firebase/firestore";
 
 const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {

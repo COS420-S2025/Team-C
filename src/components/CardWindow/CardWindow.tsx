@@ -9,6 +9,7 @@ export type CardVersion = {
   set?: string;
   rarity?: string;
   releaseDate?: string;
+  isFoil?: boolean;
 };
 
 type CardWindowProps = {
@@ -17,6 +18,11 @@ type CardWindowProps = {
   addToCollection: (card: CardVersion) => void;
   removeFromCollection: (card: CardVersion) => void;
   cards: CardVersion[];
+};
+
+const getVariant = (name: string) => {
+  const match = name.match(/\b(ex|gx|v|max|vstar|radiant|tag team)\b/i);
+  return match ? match[0].toUpperCase() : "BASE";
 };
 
 const CardWindow: React.FC<CardWindowProps> = ({
@@ -29,19 +35,21 @@ const CardWindow: React.FC<CardWindowProps> = ({
   const [versions, setVersions] = useState<CardVersion[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
+  const [isFoil, setIsFoil] = useState(false);
 
   useEffect(() => {
     const sdk = new TCGdex("en");
 
     const fetchVersions = async () => {
       setLoading(true);
+
       try {
-        const list = await sdk.card.list(
-          Query.create().equal("name", cardName)
-        );
+        const base = cardName.toLowerCase().trim();
+
+        const list = await sdk.card.list(Query.create().like("name", base));
 
         const fullCards = await Promise.all(
-          list.map((c: any) => sdk.card.get(c.id))
+          list.map((c: any) => sdk.card.get(c.id)),
         );
 
         const cardsWithSetData = await Promise.all(
@@ -51,11 +59,10 @@ const CardWindow: React.FC<CardWindowProps> = ({
             if (c.set?.id) {
               try {
                 const setData = await sdk.set.get(c.set.id);
-
                 if (setData?.releaseDate) {
                   releaseDate = setData.releaseDate;
                 }
-              } catch {}    
+              } catch {}
             }
 
             return {
@@ -66,17 +73,30 @@ const CardWindow: React.FC<CardWindowProps> = ({
               rarity: c.rarity || "Unknown rarity",
               releaseDate,
             };
-          })
+          }),
         );
 
-        const sorted = cardsWithSetData.sort(
+        const filtered = cardsWithSetData.filter((c) => {
+          const name = c.name.toLowerCase();
+
+          return (
+            name.includes(base) &&
+            !name.includes("trainer") &&
+            !name.includes("item") &&
+            !name.includes("energy") &&
+            !name.includes("tag team")
+          );
+        });
+
+        const sorted = filtered.sort(
           (a, b) =>
             new Date(b.releaseDate!).getTime() -
-            new Date(a.releaseDate!).getTime()
+            new Date(a.releaseDate!).getTime(),
         );
 
         setVersions(sorted);
-        setSelectedCard(sorted[0]);
+        setSelectedCard(sorted[0] || null);
+        setIsFoil(false);
       } catch (err) {
         console.error(err);
       } finally {
@@ -87,13 +107,14 @@ const CardWindow: React.FC<CardWindowProps> = ({
     fetchVersions();
   }, [cardName]);
 
-  const getCount = (id: string) =>
-    cards.filter((c) => c.id === id).length;
+  const getCount = (id: string) => cards.filter((c) => c.id === id).length;
 
   return (
     <div className="window-backdrop" onClick={onClose}>
       <div className="window-content" onClick={(e) => e.stopPropagation()}>
-        <button className="window-close" onClick={onClose}>X</button>
+        <button className="window-close" onClick={onClose}>
+          X
+        </button>
 
         {loading || !selectedCard ? (
           <p>Loading...</p>
@@ -110,13 +131,14 @@ const CardWindow: React.FC<CardWindowProps> = ({
               <select
                 value={selectedCard.id}
                 onChange={(e) => {
-                  const found = versions.find(v => v.id === e.target.value);
+                  const found = versions.find((v) => v.id === e.target.value);
                   if (found) setSelectedCard(found);
                 }}
               >
                 {versions.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.set} ({c.releaseDate?.slice(0, 4)}) — {c.rarity}
+                    {c.set} ({c.releaseDate?.slice(0, 4)}) — {c.rarity} —{" "}
+                    {getVariant(c.name)}
                   </option>
                 ))}
               </select>
@@ -124,10 +146,34 @@ const CardWindow: React.FC<CardWindowProps> = ({
               <p>{selectedCard.set}</p>
               <p>{selectedCard.rarity}</p>
 
+              {/* FOIL TOGGLE */}
+              <div style={{ marginTop: "10px" }}>
+                <label
+                  style={{ display: "flex", gap: "8px", alignItems: "center" }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isFoil}
+                    onChange={() => setIsFoil(!isFoil)}
+                  />
+                  Foil Version
+                </label>
+              </div>
+
               <div className="quantity-stepper">
-                <button onClick={() => removeFromCollection(selectedCard)}>−</button>
+                <button
+                  onClick={() =>
+                    removeFromCollection({ ...selectedCard, isFoil })
+                  }
+                >
+                  −
+                </button>
                 <span>{getCount(selectedCard.id)}</span>
-                <button onClick={() => addToCollection(selectedCard)}>+</button>
+                <button
+                  onClick={() => addToCollection({ ...selectedCard, isFoil })}
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>
