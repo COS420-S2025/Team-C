@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router";
 import { auth, db, googleAuthProvider } from "../..";
-import type { AccountProps } from "../Navbar/Navbar";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
-const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
-  // Initialize navigation
-  const navigate = useNavigate();
-
+const Signup: React.FC<AccountPageDisplayProps> = ({
+  AccountProps,
+  setShowSignup,
+}) => {
   // State
   const [authing, setAuthing] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [error, setError] = useState<string>("");
+
+  const handleLoginClick = () => {
+    setShowSignup(false);
+  };
 
   // Handling signup
 
@@ -23,23 +26,31 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
     setAuthing(true);
 
     signInWithPopup(auth, googleAuthProvider)
-      .then((response) => {
-        console.log(response.user.uid);
-        setUserData({
-          ...userData,
+      .then(async (response) => {
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+
+        if (userData) {
+          throw new Error(
+            "An account using this Google account is already registered!",
+          );
+        }
+
+        AccountProps.setUserData({
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
+        setError(error.message);
         setAuthing(false);
       });
   };
@@ -56,20 +67,27 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
     setError("");
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        console.log(response.user.uid);
-        setUserData({
-          ...userData,
+      .then(async (response) => {
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+
+        if (userData) {
+          throw new Error(
+            "An account using this Google account is already registered!",
+          );
+        }
+
+        AccountProps.setUserData({
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
         });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
@@ -156,7 +174,14 @@ const Signup: React.FC<AccountProps> = ({ userData, setUserData }) => {
           <p className="text-sm font-normal text-gray-400">
             Already have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              <a href="/login">Log In</a>
+              {/* <a href="/login">Log In</a> */}
+              <button
+                className="underline"
+                onClick={handleLoginClick}
+                disabled={authing}
+              >
+                Log In
+              </button>
             </span>
           </p>
         </div>
