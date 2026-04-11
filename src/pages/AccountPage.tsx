@@ -16,17 +16,6 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
   const [newEmail, setNewEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
 
-  // I don't know what type is sent when changing
-  // an input field, if someone knows or can
-  // find out, please change this type declaration
-  const handleNameChange = (event: any) => {
-    setNewName(event.target.value);
-  };
-
-  const handleEmailChange = (event: any) => {
-    setNewEmail(event.target.value);
-  };
-
   const handleNameUpdate = async () => {
     if (userData) {
       try {
@@ -91,7 +80,7 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
                 value={newName}
                 className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
                 placeholder="New Name"
-                onChange={handleNameChange}
+                onChange={(e) => setNewName(e.target.value)}
               />
               <button
                 className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
@@ -107,7 +96,7 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
                 value={newEmail}
                 className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
                 placeholder="New Email"
-                onChange={handleEmailChange}
+                onChange={(e) => setNewEmail(e.target.value)}
               />
               <button
                 className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
