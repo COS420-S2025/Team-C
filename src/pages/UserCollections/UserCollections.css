@@ -1,0 +1,25 @@
+.app-page {
+  color: black;
+}
+
+.collections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.collection-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+.collection-card h3 {
+  margin: 0;
+}
+
+.collection-count {
+  color: gray;
+  font-size: 14px;
+}

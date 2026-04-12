@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useCollections } from "../../pages/UserCollections/CollectionContext";
-
+import "./UserCollections.css";
 export default function UserCollections() {
   const { collections, createCollection } = useCollections();
   const [name, setName] = useState("");
@@ -9,12 +9,15 @@ export default function UserCollections() {
     <div className="app-page">
       <h1>User Collections</h1>
 
-      <div style={{ marginBottom: 20 }}>
+      {/* CREATE COLLECTION */}
+      <div className="create-collection">
         <input
+          type="text"
+          placeholder="Enter collection name..."
           value={name}
-          placeholder="New collection name"
           onChange={(e) => setName(e.target.value)}
         />
+
         <button
           onClick={() => {
             if (!name.trim()) return;
@@ -22,19 +25,26 @@ export default function UserCollections() {
             setName("");
           }}
         >
-          Create Collection
+          Create
         </button>
       </div>
 
+      {/* COLLECTION LIST */}
       {collections.length === 0 ? (
-        <p>No collections yet</p>
+        <p>No collections yet.</p>
       ) : (
-        collections.map((col) => (
-          <div key={col.id} className="card-item">
-            <h3>{col.name}</h3>
-            <p>{col.cards.length} cards</p>
-          </div>
-        ))
+        <div className="collections-list">
+          {collections.map((col) => (
+            <div key={col.id} className="collection-card">
+              <h3>{col.name}</h3>
+
+              <p className="collection-count">
+                {col.cards.length} card
+                {col.cards.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
