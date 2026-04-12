@@ -1,24 +1,18 @@
 import React, { useState } from "react";
 import "./CardCollection.css";
-import type { CardVersion } from "../components/CardWindow/CardWindow";
-import CardWindow from "../components/CardWindow/CardWindow";
+import CardWindow, {
+  type CardVersion,
+} from "../../components/CardWindow/CardWindow";
+import { useCollections } from "../UserCollections/CollectionContext";
 
-type CollectionProps = {
-  cards: CardVersion[];
-  addCard: (card: CardVersion) => void;
-  removeCard: (card: CardVersion) => void;
-};
+export default function Collection() {
+  const { main, addCard, removeCard } = useCollections();
 
-export default function Collection({
-  cards,
-  addCard,
-  removeCard,
-}: CollectionProps) {
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
   const groupedCards = Object.values(
-    cards.reduce((acc: any, card) => {
+    main.reduce((acc: any, card) => {
       if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
       else acc[card.id].count++;
       return acc;
@@ -27,7 +21,7 @@ export default function Collection({
 
   return (
     <div className="app-page">
-      <h1>Collection</h1>
+      <h1>Main Collection</h1>
 
       <select
         value={cardsPerRow}
@@ -54,14 +48,17 @@ export default function Collection({
             >
               <img src={card.imageUrl} alt={card.name} />
               <p>{card.name}</p>
-              {card.set && <p className="card-meta">{card.set}</p>}
-              {card.rarity && <p className="card-meta">{card.rarity}</p>}
+
               {card.count > 1 && (
                 <div className="card-count">x{card.count}</div>
               )}
+
               <button
                 className="remove-button"
-                onClick={() => removeCard(card)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeCard(card);
+                }}
               >
                 Remove
               </button>
@@ -74,9 +71,6 @@ export default function Collection({
         <CardWindow
           cardName={selectedCard.name}
           onClose={() => setSelectedCard(null)}
-          addToCollection={addCard}
-          removeFromCollection={removeCard}
-          cards={cards}
         />
       )}
     </div>

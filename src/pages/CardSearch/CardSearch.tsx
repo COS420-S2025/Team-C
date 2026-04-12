@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./CardSearch.css";
 import CardWindow, {
   type CardVersion,
-} from "../components/CardWindow/CardWindow";
+} from "../../components/CardWindow/CardWindow";
 import TCGdex, { Query } from "@tcgdex/sdk";
 
 type SearchProps = {

@@ -1,18 +1,17 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
 import Account from "../../pages/AccountPage";
-import Collection from "../../pages/CardCollection";
-import Search from "../../pages/CardSearch";
+import Collection from "../../pages/CardCollection/CardCollection";
+import Search from "../../pages/CardSearch/CardSearch";
 import Home from "../../pages/home";
+import UserCollections from "../../pages/UserCollections/UserCollections";
+
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
 import Login from "../Login/Login";
 import Signup from "../Signup/Signup";
 
-export type AccountProps = {
-  setUserData: (userData: User | null) => void;
-  userData: User | null;
-};
+import { CollectionsProvider } from "../../pages/UserCollections/CollectionContext";
 
 export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
   return (
@@ -23,85 +22,68 @@ export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
 };
 
 export default function Navbar(): React.JSX.Element {
-  // Stores all cards in the collection
-  const [cards, setCards] = useState<any[]>([]);
   const [userData, setUserData] = useState<User | null>(null);
 
-  // Adds a card
-  const addCard = (card: any) => {
-    setCards([...cards, card]);
-  };
-
-  // Removes a card
-  const removeCard = (cardToRemove: any) => {
-    setCards(cards.filter((card) => card.id !== cardToRemove.id));
-  };
-
   return (
-    <Router>
-      <div className="app-navbar">
-        <nav>
-          <ul className="app-navbar-list">
-            <Link to="/home" className="app-navbar-item">
-              Home
-            </Link>
-            <Link to="/search" className="app-navbar-item">
-              Search
-            </Link>
-            <Link to="/all" className="app-navbar-item">
-              My Cards
-            </Link>
-            <Link to="/collection" className="app-navbar-item">
-              Collections
-            </Link>
-            {!userData ? (
-              <Link to="/login" className="app-navbar-item">
-                Log In
+    <CollectionsProvider>
+      <Router>
+        <div className="app-navbar">
+          <nav>
+            <ul className="app-navbar-list">
+              <Link to="/home" className="app-navbar-item">
+                Home
               </Link>
-            ) : (
-              <SignedIn currentUser={userData} />
-            )}
-          </ul>
-        </nav>
-      </div>
 
-      {/* Routes */}
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Home />} />
+              <Link to="/search" className="app-navbar-item">
+                Search
+              </Link>
 
-        <Route
-          path="/collection"
-          element={
-            <Collection
-              cards={cards}
-              removeCard={removeCard}
-              addCard={addCard}
-            />
-          }
-        />
+              {/* MAIN INVENTORY */}
+              <Link to="/collection" className="app-navbar-item">
+                My Cards
+              </Link>
 
-        <Route
-          path="/search"
-          element={
-            <Search cards={cards} removeCard={removeCard} addCard={addCard} />
-          }
-        />
+              {/* USER DECKS / CUSTOM COLLECTIONS */}
+              <Link to="/collections" className="app-navbar-item">
+                Collections
+              </Link>
 
-        <Route path="/account" element={<Account />} />
+              {!userData ? (
+                <Link to="/login" className="app-navbar-item">
+                  Log In
+                </Link>
+              ) : (
+                <SignedIn currentUser={userData} />
+              )}
+            </ul>
+          </nav>
+        </div>
 
-        <Route path="/all" element={<Home />} />
+        {/* ROUTES */}
+        <Routes>
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
 
-        <Route
-          path="/login"
-          element={<Login userData={userData} setUserData={setUserData} />}
-        />
+          {/* MAIN CARD INVENTORY */}
+          <Route path="/collection" element={<Collection />} />
 
-        <Route
-          path="/signup"
-          element={<Signup userData={userData} setUserData={setUserData} />}
-        />
-      </Routes>
-    </Router>
+          {/* USER-CREATED COLLECTIONS */}
+          <Route path="/collections" element={<UserCollections />} />
+
+          <Route path="/search" element={<Search />} />
+          <Route path="/account" element={<Account />} />
+
+          <Route
+            path="/login"
+            element={<Login userData={userData} setUserData={setUserData} />}
+          />
+
+          <Route
+            path="/signup"
+            element={<Signup userData={userData} setUserData={setUserData} />}
+          />
+        </Routes>
+      </Router>
+    </CollectionsProvider>
   );
 }
