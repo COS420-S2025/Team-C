@@ -29,9 +29,9 @@ export default function Navbar(): React.JSX.Element {
 
   return (
     <Router>
-      <div className="app-navbar">
-        <nav>
-          <ul className="app-navbar-list">
+      <div className="w-screen flex justify-center items-center fixed top-0">
+        <nav className="h-1/10 w-full flex justify-center items-center py-[10px] px-[20px] rounded-[10px] bg-[#003b49] shadow-2xl">
+          <ul className="w-full list-none list-image-none flex justify-center items-center">
             <Link to="/home" className="app-navbar-item">
               Home
             </Link>
