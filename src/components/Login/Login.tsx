@@ -13,12 +13,9 @@ const Login: React.FC<AccountPageDisplayProps> = ({
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleSignupClick = () => {
-    setShowSignup(true);
-  };
-
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = () => {
     setAuthing(true);
+    setError("");
 
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
@@ -143,10 +140,9 @@ const Login: React.FC<AccountPageDisplayProps> = ({
           <p className="text-sm font-normal text-gray-400">
             Don't have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              {/* <a href="/account/signup">Sign Up</a> */}
               <button
                 className="underline"
-                onClick={handleSignupClick}
+                onClick={() => setShowSignup(true)}
                 disabled={authing}
               >
                 Sign Up

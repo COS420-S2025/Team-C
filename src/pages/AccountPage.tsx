@@ -10,7 +10,7 @@ export type AccountPageDisplayProps = {
   setShowSignup: (showSignup: boolean) => void;
 };
 
-const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
+const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
   const [showSignup, setShowSignup] = useState<boolean>(true);
   const [newName, setNewName] = useState<string>("");
   const [newEmail, setNewEmail] = useState<string>("");
@@ -24,6 +24,7 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
         await updateDoc(userRef, {
           name: newName,
         });
+
         setUserData({ ...userData, name: newName });
         setMessage(`Name changed to: ${newName}!`);
         setNewName("");
@@ -43,6 +44,7 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
         const userRef = doc(db, "users", userData.uid);
 
         await updateDoc(userRef, { email: newEmail });
+
         setUserData({ ...userData, email: newEmail });
         setMessage(`Email changed to: ${newEmail}!`);
         setNewEmail("");
@@ -124,4 +126,4 @@ const Account: React.FC<AccountProps> = ({ userData, setUserData }) => {
   );
 };
 
-export default Account;
+export default AccountPage;

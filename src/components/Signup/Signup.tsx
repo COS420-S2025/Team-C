@@ -15,15 +15,12 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleLoginClick = () => {
-    setShowSignup(false);
-  };
-
   // Handling signup
 
   // Google
   const signUpWithGoogle = () => {
     setAuthing(true);
+    setError("");
 
     signInWithPopup(auth, googleAuthProvider)
       .then(async (response) => {
@@ -42,6 +39,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
           name: response.user.displayName,
           email: response.user.email,
         });
+
         await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
@@ -83,6 +81,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
           name: response.user.displayName,
           email: response.user.email,
         });
+
         await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
@@ -174,10 +173,9 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
           <p className="text-sm font-normal text-gray-400">
             Already have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              {/* <a href="/login">Log In</a> */}
               <button
                 className="underline"
-                onClick={handleLoginClick}
+                onClick={() => setShowSignup(false)}
                 disabled={authing}
               >
                 Log In

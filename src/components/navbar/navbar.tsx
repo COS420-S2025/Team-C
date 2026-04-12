@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
-import Account from "../../pages/AccountPage";
+import AccountPage from "../../pages/AccountPage";
 import Collection from "../../pages/CardCollection";
 import Search from "../../pages/CardSearch";
 import Home from "../../pages/home";
@@ -10,14 +10,6 @@ import type { User } from "../../interfaces/User";
 export type AccountProps = {
   setUserData: (userData: User | null) => void;
   userData: User | null;
-};
-
-export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
-  return (
-    <div>
-      {currentUser ? `Signed in as: ${currentUser.name}` : "Not Signed In"}
-    </div>
-  );
 };
 
 export default function Navbar(): React.JSX.Element {
@@ -84,7 +76,9 @@ export default function Navbar(): React.JSX.Element {
 
         <Route
           path="/account"
-          element={<Account userData={userData} setUserData={setUserData} />}
+          element={
+            <AccountPage userData={userData} setUserData={setUserData} />
+          }
         />
 
         <Route path="/all" element={<Home />} />
