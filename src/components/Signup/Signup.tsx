@@ -71,9 +71,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
         const userData = userDoc.data();
 
         if (userData) {
-          throw new Error(
-            "An account using this Google account is already registered!",
-          );
+          throw new Error("An account using this email is already registered!");
         }
 
         AccountProps.setUserData({
