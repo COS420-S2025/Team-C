@@ -53,7 +53,7 @@ export default function Collection({
               onClick={() => setSelectedCard(card)}
             >
               <img src={card.imageUrl} alt={card.name} />
-              <p>{card.name}</p>
+              <p>{PIKACHU!}</p>
               {card.set && <p className="card-meta">{card.set}</p>}
               {card.rarity && <p className="card-meta">{card.rarity}</p>}
               {card.count > 1 && (
