@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["main", "workflow-fix"]
+    branches: ["main", "sprint*"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "sprint*"]
 
 jobs:
   build:
