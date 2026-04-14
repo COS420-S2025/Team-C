@@ -35,4 +35,18 @@ describe("AccountPage", () =>
     expect(await screen.findByText("Name changed to: Dean!").toBeInTheDocument);
     expect(await screen.findByText("Signed in as: Dean").toBeInTheDocument);
   });
+
+  test("renders email change", async () =>
+  {
+    render(<AccountPage userData={fakeUser} setUserData={fakeSetUserData} />);
+
+    const inputEmail = screen.getByPlaceholderText("New Email");
+    const button = screen.getByText("Change Email");
+
+    fireEvent.change(inputEmail, "dean@test.com");
+    fireEvent.click(button);
+
+    expect(await screen.findByText("Email changed to: dean@test.com!").
+      toBeInTheDocument);
+  });
 });
