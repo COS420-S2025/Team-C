@@ -34,13 +34,10 @@ if (window.location.hostname === "localhost") {
   connectFirestoreEmulator(db, "localhost", 8080);
 }
 
-const rootElement = document.getElementById("root"); 
+const rootElement = document.getElementById("root");
 
-if (rootElement)
-{
-  const root = createRoot(
-    document.getElementById("root") as HTMLElement,
-  );
+if (rootElement) {
+  const root = createRoot(document.getElementById("root") as HTMLElement);
   root.render(
     <React.StrictMode>
       <App />
