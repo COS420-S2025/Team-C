@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
-import type { CardVersion } from "../components/CardWindow/CardWindow";
+import type { CardVersion } from "../../components/CardWindow/CardWindow";
 
 export type Collection = {
   id: string;
   name: string;
   cards: CardVersion[];
+  cover?: string;
 };
 
 type CollectionsContextType = {
@@ -50,10 +51,13 @@ export const CollectionsProvider: React.FC<{ children: React.ReactNode }> = ({
       setCollections((prev) =>
         prev.map((col) => {
           if (col.id !== collectionId) return col;
+
           const idx = col.cards.findIndex((c) => c.id === card.id);
           if (idx === -1) return col;
+
           const copy = [...col.cards];
           copy.splice(idx, 1);
+
           return { ...col, cards: copy };
         }),
       );

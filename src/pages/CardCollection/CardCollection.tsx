@@ -5,8 +5,8 @@ import CardWindow, {
 } from "../../components/CardWindow/CardWindow";
 import { useCollections } from "../UserCollections/CollectionContext";
 
-export default function Collection() {
-  const { main, addCard, removeCard } = useCollections();
+export default function CardCollection() {
+  const { main, removeCard } = useCollections();
 
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);

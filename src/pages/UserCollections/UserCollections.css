@@ -2,21 +2,41 @@
   color: black;
 }
 
+.create-collection input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: black;
+}
+
+.create-collection button {
+  margin-left: 10px;
+  padding: 10px;
+  background-color: lightgray;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .collections-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .collection-card {
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 10px;
-  background: #f9f9f9;
+  background: white;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.collection-card h3 {
-  margin: 0;
+.collection-card:hover {
+  background: #f0f0f0;
 }
 
 .collection-count {

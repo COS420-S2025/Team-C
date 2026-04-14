@@ -1,78 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CardSearch.css";
-import CardWindow, {
-  type CardVersion,
-} from "../../components/CardWindow/CardWindow";
-import TCGdex, { Query } from "@tcgdex/sdk";
+import CardWindow from "../../components/CardWindow/CardWindow";
 
-type SearchProps = {
-  cards: CardVersion[];
-  addCard: (card: CardVersion) => void;
-  removeCard: (card: CardVersion) => void;
-};
-
-const normalize = (name: string) =>
-  name
-    .toLowerCase()
-    .replace(/\b(ex|gx|v|max|vstar|radiant|mega|tag team)\b/g, "")
-    .replace(/[^a-z0-9 ]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const isSpecial = (name: string) =>
-  /\b(ex|gx|v|max|vstar|radiant|mega|tag team)\b/i.test(name);
-
-const Search: React.FC<SearchProps> = ({ cards, addCard, removeCard }) => {
+export default function CardSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
+  const cache = useRef<{ [key: string]: any[] }>({});
+
   useEffect(() => {
-    const q = query.toLowerCase().trim();
+    const q = query.trim().toLowerCase();
 
     if (!q) {
       setResults([]);
       return;
     }
 
-    const sdk = new TCGdex("en");
+    if (cache.current[q]) {
+      setResults(cache.current[q]);
+      return;
+    }
 
     const timer = setTimeout(async () => {
       try {
-        let found: any[] =
-          q.length <= 2
-            ? await sdk.card.list(Query.create())
-            : await sdk.card.list(Query.create().like("name", q));
+        const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${q}`);
 
-        const map = new Map<string, any>();
+        const data = await res.json();
 
-        for (const card of found) {
-          const base = normalize(card.name);
-          const existing = map.get(base);
+        const seen = new Set<string>();
 
-          if (!existing) {
-            map.set(base, card);
-            continue;
-          }
+        const filtered = (data || [])
+          .filter((c: any) => {
+            if (!c?.name) return false;
 
-          const existingSpecial = isSpecial(existing.name);
-          const currentSpecial = isSpecial(card.name);
+            const base = c.name.split(" ")[0];
 
-          if (existingSpecial && !currentSpecial) {
-            map.set(base, card);
-          }
-        }
+            if (seen.has(base)) return false;
+            seen.add(base);
 
-        const unique = Array.from(map.values())
-          .filter((c) => normalize(c.name).startsWith(q))
+            return true;
+          })
           .slice(0, 20);
 
-        setResults(unique);
+        cache.current[q] = filtered;
+        setResults(filtered);
       } catch (err) {
         console.error(err);
         setResults([]);
       }
-    }, 200);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [query]);
@@ -82,67 +59,38 @@ const Search: React.FC<SearchProps> = ({ cards, addCard, removeCard }) => {
       <div className="input-container">
         <input
           className="search-input"
-          type="text"
-          placeholder="Search Pokémon..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search Pokémon..."
         />
 
-        {results.length > 0 && (
+        {query && (
           <ul className="dropdown">
-            {results.map((card) => {
-              const img =
-                card.getImageURL?.("high", "png") ||
-                card.getImageURL?.("low", "png") ||
-                card.getImageURL?.("official", "png") ||
-                "";
-
-              return (
+            {results.length === 0 ? (
+              <li className="dropdown-item">No results</li>
+            ) : (
+              results.map((card) => (
                 <li
                   key={card.id}
                   className="dropdown-item"
                   onClick={() => setSelected(card.name)}
                 >
                   <img
-                    src={img}
+                    src={card.image + "/low.png"}
                     alt={card.name}
                     className="thumb"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
                   />
-
-                  {/* CLEAN NAME ONLY */}
-                  <span>{card.name.split(" ")[0]}</span>
-
-                  <div className="types">
-                    {card.types?.map((t: string) => (
-                      <img
-                        key={t}
-                        src={`/types/${t}.png`}
-                        alt={t}
-                        className="type-icon"
-                      />
-                    ))}
-                  </div>
+                  <span>{card.name}</span>
                 </li>
-              );
-            })}
+              ))
+            )}
           </ul>
         )}
       </div>
 
       {selected && (
-        <CardWindow
-          cardName={selected}
-          onClose={() => setSelected(null)}
-          addToCollection={addCard}
-          removeFromCollection={removeCard}
-          cards={cards}
-        />
+        <CardWindow cardName={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   );
-};
-
-export default Search;
+}
