@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import AccountPage from "./AccountPage";
 
@@ -20,5 +20,19 @@ describe("AccountPage", () =>
     render(<AccountPage userData={fakeUser} setUserData={fakeSetUserData} />);
 
     expect(screen.getByText("Signed in as: Jonah").toBeInTheDocument);
+  });
+
+  test("renders name change", async () =>
+  {
+    render(<AccountPage userData={fakeUser} setUserData={fakeSetUserData} />);
+
+    const inputName = screen.getByPlaceholderText("New Name");
+    const button = screen.getByText("Change Name");
+
+    fireEvent.change(inputName, "Dean");
+    fireEvent.click(button);
+
+    expect(await screen.findByText("Name changed to: Dean!").toBeInTheDocument);
+    expect(await screen.findByText("Signed in as: Dean").toBeInTheDocument);
   });
 });
