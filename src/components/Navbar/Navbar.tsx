@@ -1,25 +1,15 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
-import Account from "../../pages/AccountPage";
+import AccountPage from "../../pages/AccountPage";
 import Collection from "../../pages/CardCollection";
 import Search from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
-import Login from "../Login/Login";
-import Signup from "../Signup/Signup";
 
 export type AccountProps = {
   setUserData: (userData: User | null) => void;
   userData: User | null;
-};
-
-export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
-  return (
-    <div>
-      {currentUser ? `Signed in as: ${currentUser.name}` : "Not Signed In"}
-    </div>
-  );
 };
 
 export default function Navbar(): React.JSX.Element {
@@ -39,9 +29,9 @@ export default function Navbar(): React.JSX.Element {
 
   return (
     <Router>
-      <div className="app-navbar">
-        <nav>
-          <ul className="app-navbar-list">
+      <div className="w-screen flex justify-center items-center fixed top-0">
+        <nav className="h-1/10 w-full flex justify-center items-center py-[10px] px-[20px] rounded-[10px] bg-[#003b49] shadow-2xl">
+          <ul className="w-full list-none list-image-none flex justify-center items-center">
             <Link to="/home" className="app-navbar-item">
               Home
             </Link>
@@ -54,13 +44,9 @@ export default function Navbar(): React.JSX.Element {
             <Link to="/collection" className="app-navbar-item">
               Collections
             </Link>
-            {!userData ? (
-              <Link to="/login" className="app-navbar-item">
-                Log In
-              </Link>
-            ) : (
-              <SignedIn currentUser={userData} />
-            )}
+            <Link to="/account" className="app-navbar-item">
+              Account
+            </Link>
           </ul>
         </nav>
       </div>
@@ -88,19 +74,14 @@ export default function Navbar(): React.JSX.Element {
           }
         />
 
-        <Route path="/account" element={<Account />} />
+        <Route
+          path="/account"
+          element={
+            <AccountPage userData={userData} setUserData={setUserData} />
+          }
+        />
 
         <Route path="/all" element={<Home />} />
-
-        <Route
-          path="/login"
-          element={<Login userData={userData} setUserData={setUserData} />}
-        />
-
-        <Route
-          path="/signup"
-          element={<Signup userData={userData} setUserData={setUserData} />}
-        />
       </Routes>
     </Router>
   );
