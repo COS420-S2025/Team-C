@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../pages/CardCollection/CardCollection.css";
+import "../pages/CardCollection.css";
 import CardWindow, {
   type CardVersion,
 } from "../components/CardWindow/CardWindow";
