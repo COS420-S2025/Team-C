@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
 import Account from "../../pages/AccountPage";
-import Collection from "../../pages/CardCollection/CardCollection";
+import Collection from "../../pages/CardCollection";
 import Search from "../../pages/CardSearch/CardSearch";
 import Home from "../../pages/home";
 import UserCollections from "../../pages/UserCollections/UserCollections";
