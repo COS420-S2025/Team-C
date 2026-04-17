@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
+import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom";
 import "./Navbar.css";
 import Account from "../../pages/AccountPage";
 import Collection from "../../pages/CardCollection";
@@ -15,7 +15,7 @@ import { CollectionsProvider } from "../../pages/UserCollections/CollectionConte
 
 export const SignedIn = ({ currentUser }: { currentUser: User | null }) => {
   return (
-    <div>
+    <div className="text-white">
       {currentUser ? `Signed in as: ${currentUser.name}` : "Not Signed In"}
     </div>
   );
@@ -27,9 +27,10 @@ export default function Navbar(): React.JSX.Element {
   return (
     <CollectionsProvider>
       <Router>
-        <div className="app-navbar">
-          <nav>
-            <ul className="app-navbar-list">
+        {/* NAVBAR */}
+        <div className="w-screen flex justify-center items-center fixed top-0 z-50">
+          <nav className="w-full flex justify-center items-center py-[10px] px-[20px] bg-[#003b49] shadow-2xl">
+            <ul className="w-full flex justify-center items-center gap-6">
               <Link to="/home" className="app-navbar-item">
                 Home
               </Link>
@@ -38,12 +39,10 @@ export default function Navbar(): React.JSX.Element {
                 Search
               </Link>
 
-              {/* MAIN INVENTORY */}
               <Link to="/collection" className="app-navbar-item">
                 My Cards
               </Link>
 
-              {/* USER DECKS / CUSTOM COLLECTIONS */}
               <Link to="/collections" className="app-navbar-item">
                 Collections
               </Link>
@@ -59,30 +58,29 @@ export default function Navbar(): React.JSX.Element {
           </nav>
         </div>
 
-        {/* ROUTES */}
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/" element={<Home />} />
+        {/* PAGE CONTENT OFFSET (prevents overlap with fixed navbar) */}
+        <div className="pt-20">
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Home />} />
 
-          {/* MAIN CARD INVENTORY */}
-          <Route path="/collection" element={<Collection />} />
+            <Route path="/collection" element={<Collection />} />
+            <Route path="/collections" element={<UserCollections />} />
 
-          {/* USER-CREATED COLLECTIONS */}
-          <Route path="/collections" element={<UserCollections />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/account" element={<Account />} />
 
-          <Route path="/search" element={<Search />} />
-          <Route path="/account" element={<Account />} />
+            <Route
+              path="/login"
+              element={<Login userData={userData} setUserData={setUserData} />}
+            />
 
-          <Route
-            path="/login"
-            element={<Login userData={userData} setUserData={setUserData} />}
-          />
-
-          <Route
-            path="/signup"
-            element={<Signup userData={userData} setUserData={setUserData} />}
-          />
-        </Routes>
+            <Route
+              path="/signup"
+              element={<Signup userData={userData} setUserData={setUserData} />}
+            />
+          </Routes>
+        </div>
       </Router>
     </CollectionsProvider>
   );
