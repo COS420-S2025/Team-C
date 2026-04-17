@@ -2,8 +2,8 @@ import { useState } from "react";
 import "./CardCollection.css";
 import CardWindow, {
   type CardVersion,
-} from "../../components/CardWindow/CardWindow";
-import { useCollections } from "../UserCollections/CollectionContext";
+} from "../components/CardWindow/CardWindow";
+import { useCollections } from "./UserCollections/CollectionContext";
 
 export default function CardCollection() {
   const { main, removeCard } = useCollections();
