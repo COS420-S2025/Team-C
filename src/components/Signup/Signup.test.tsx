@@ -1,14 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import Signup from "./Signup";
-import type { User } from "../../interfaces/User";
-import { useState } from "react";
 
 describe("Signup Tests", () => {
   test("Signup component renders without crashing app", () => {
-    const [fakeUser, setFakeUser] = useState<User | null>(null);
-
-    render(<Signup userData={fakeUser} setUserData={setFakeUser} />);
-    const login = screen.getByText("Login");
-    expect(login).toBeInTheDocument();
+    render(
+      <Signup
+        AccountProps={{ userData: null, setUserData: jest.fn() }}
+        setShowSignup={jest.fn()}
+      />,
+    );
+    const signup = screen.getByText("Sign Up");
+    expect(signup).toBeInTheDocument();
   });
 });
