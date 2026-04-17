@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./CardCollection.css";
 import type { CardVersion } from "../components/CardWindow/CardWindow";
 import CardWindow from "../components/CardWindow/CardWindow";
