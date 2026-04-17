@@ -30,8 +30,12 @@ export default function Navbar(): React.JSX.Element {
         <div className="app-navbar">
           <nav>
             <ul className="app-navbar-list">
-              <Link to="/home" className="app-navbar-item">
-                Home
+              <Link to="/home" className="app-navbar-item app-navbar-home-link">
+                <img
+                  src="/home-icon.png"
+                  alt="Home"
+                  className="app-navbar-home-icon"
+                />
               </Link>
 
               <Link to="/search" className="app-navbar-item">

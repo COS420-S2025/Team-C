@@ -41,3 +41,14 @@ Navbar formatting style acquired from:
 .app-navbar-item:hover:before {
   width: 120%;
 }
+
+.app-navbar-home-link {
+  padding: 6px;
+}
+
+.app-navbar-home-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 11;
+}
