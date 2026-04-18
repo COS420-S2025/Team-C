@@ -1,18 +1,13 @@
 import { useState } from "react";
-import {
-  getAuth,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { useNavigate } from "react-router";
-import { db, googleAuthProvider } from "../..";
-import type { AccountProps } from "../Navbar/Navbar";
-import { addDoc, collection } from "firebase/firestore";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db, googleAuthProvider } from "../..";
+import { doc, getDoc } from "firebase/firestore";
+import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
-const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
-  const auth = getAuth();
-  const navigate = useNavigate();
-
+const Login: React.FC<AccountPageDisplayProps> = ({
+  AccountProps,
+  setShowSignup,
+}) => {
   const [authing, setAuthing] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -20,26 +15,28 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
 
   const signInWithGoogle = () => {
     setAuthing(true);
+    setError("");
 
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
-      .then((response) => {
-        console.log(response.user.uid);
-        setUserData({
-          ...userData,
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
+      .then(async (response) => {
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+
+        if (!userData) {
+          throw new Error("Account not found!");
+        }
+
+        AccountProps.setUserData({
+          uid: userData.uid,
+          name: userData.name,
+          email: userData.email,
         });
-        addDoc(collection(db, "users"), {
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
+        setError(error.message);
         setAuthing(false);
       });
   };
@@ -50,20 +47,20 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
 
     // use firebase to sign in
     signInWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        console.log(response.user.uid);
-        setUserData({
-          ...userData,
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
+      .then(async (response) => {
+        const userRef = doc(db, "users", response.user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+
+        if (!userData) {
+          throw new Error("Account not found!");
+        }
+
+        AccountProps.setUserData({
+          uid: userData.uid,
+          name: userData.name,
+          email: userData.email,
         });
-        addDoc(collection(db, "users"), {
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-        });
-        navigate("/");
       })
       .catch((error) => {
         console.error(error);
@@ -143,7 +140,13 @@ const Login: React.FC<AccountProps> = ({ userData, setUserData }) => {
           <p className="text-sm font-normal text-gray-400">
             Don't have an account?{" "}
             <span className="font-semibold text-white cursor-pointer underline">
-              <a href="/signup">Sign Up</a>
+              <button
+                className="underline"
+                onClick={() => setShowSignup(true)}
+                disabled={authing}
+              >
+                Sign Up
+              </button>
             </span>
           </p>
         </div>
