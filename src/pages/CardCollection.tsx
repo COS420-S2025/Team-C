@@ -2,20 +2,28 @@ import { useState } from "react";
 import "./CardCollection.css";
 import type { CardVersion } from "../components/CardWindow/CardWindow";
 import CardWindow from "../components/CardWindow/CardWindow";
+import type { User } from "../interfaces/User";
+import { CollectionWindow } from "../components/CollectionWindow/CollectionWindow";
 
 type CollectionProps = {
   cards: CardVersion[];
   addCard: (card: CardVersion) => void;
   removeCard: (card: CardVersion) => void;
+  userData: User | null;
 };
 
 export default function Collection({
   cards,
   addCard,
   removeCard,
+  userData,
 }: CollectionProps) {
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
+  const [creatingNewCollection, setCreatingNewCollection] =
+    useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [collectionToDisplay, setCollectionToDisplay] = useState<string>("");
 
   const groupedCards = Object.values(
     cards.reduce((acc: any, card) => {
@@ -78,6 +86,24 @@ export default function Collection({
           removeFromCollection={removeCard}
           cards={cards}
         />
+      )}
+      {userData && (
+        <div>
+          <button
+            onClick={() => setCreatingNewCollection(!creatingNewCollection)}
+          >
+            Create New Collection
+          </button>
+
+          {creatingNewCollection && (
+            <CollectionWindow
+              userData={userData}
+              onClose={() => setCreatingNewCollection(false)}
+              setMessage={setMessage}
+            />
+          )}
+          {message && <div className="text-lime-400 mb-4">{message}</div>}
+        </div>
       )}
     </div>
   );

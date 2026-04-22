@@ -63,6 +63,7 @@ export default function Navbar(): React.JSX.Element {
               cards={cards}
               removeCard={removeCard}
               addCard={addCard}
+              userData={userData}
             />
           }
         />
