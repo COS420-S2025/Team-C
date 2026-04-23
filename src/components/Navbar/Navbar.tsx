@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
 import AccountPage from "../../pages/AccountPage";
 import Collection from "../../pages/CardCollection";
-import Search from "../../pages/CardSearch";
+import CardSearch from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
@@ -68,12 +68,7 @@ export default function Navbar(): React.JSX.Element {
           }
         />
 
-        <Route
-          path="/search"
-          element={
-            <Search cards={cards} removeCard={removeCard} addCard={addCard} />
-          }
-        />
+        <Route path="/search" element={<CardSearch />} />
 
         <Route
           path="/account"

@@ -82,9 +82,6 @@ export default function Collection({
         <CardWindow
           cardName={selectedCard.name}
           onClose={() => setSelectedCard(null)}
-          addToCollection={addCard}
-          removeFromCollection={removeCard}
-          cards={cards}
         />
       )}
       {userData && (
