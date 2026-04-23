@@ -25,6 +25,7 @@ Trading card collectors enjoy having organized collections, which can be tedious
 + Then, run `npm start` to launch the application.
 
 # Current State:
-The app is still in early development as of 03.12.2026. Do not expect full functionality; some parts may be inoperable. Some current features in development include adding a card to your collection, and some UI aspects such as a navbar.
+The app is in middle development as of 4.17.2026. Some components do not have functionality; and most have partially working functionality. Main goals: Card Search and Card Collection pages
 
 ### "That's a project manager problem."
+
