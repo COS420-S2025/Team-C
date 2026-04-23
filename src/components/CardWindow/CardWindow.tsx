@@ -1,137 +1,213 @@
-import React, { useState, useEffect } from "react";
-import TCGdex, { Query } from "@tcgdex/sdk";
+import React, { useEffect, useState } from "react";
 import "./CardWindow.css";
+import { useCollections } from "../../pages/CollectionContext";
 
 export type CardVersion = {
   id: string;
   name: string;
   imageUrl: string;
-  set?: string;
-  rarity?: string;
-  releaseDate?: string;
+  set: string;
+  rarity: string;
+  releaseDate: string;
+  isFoil: boolean;
 };
 
 type CardWindowProps = {
   cardName: string;
   onClose: () => void;
-  addToCollection: (card: CardVersion) => void;
-  removeFromCollection: (card: CardVersion) => void;
-  cards: CardVersion[];
 };
 
-const CardWindow: React.FC<CardWindowProps> = ({
-  cardName,
-  onClose,
-  addToCollection,
-  removeFromCollection,
-  cards,
-}) => {
+const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
+  const { main, addCard, removeCard, collections } = useCollections();
+
   const [versions, setVersions] = useState<CardVersion[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
-  useEffect(() => {
-    const sdk = new TCGdex("en");
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+  const [manualFoil, setManualFoil] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    const fetchVersions = async () => {
+  const getCountMain = (id: string) => main.filter((c) => c.id === id).length;
+
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
+
       try {
-        const list = await sdk.card.list(
-          Query.create().equal("name", cardName)
+        const res = await fetch(
+          `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(cardName)}`,
         );
+
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          setVersions([]);
+          setSelectedCard(null);
+          setLoading(false);
+          return;
+        }
 
         const fullCards = await Promise.all(
-          list.map((c: any) => sdk.card.get(c.id))
+          data.map(async (c: any) => {
+            const r = await fetch(`https://api.tcgdex.net/v2/en/cards/${c.id}`);
+            return await r.json();
+          }),
         );
 
-        const cardsWithSetData = await Promise.all(
-          fullCards.map(async (c: any) => {
-            let releaseDate = "1900-01-01";
+        const mapped: CardVersion[] = fullCards.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          imageUrl: c.image?.high || c.image || "",
+          set: c.set?.name || "Unknown Set",
+          rarity: c.rarity || "Unknown Rarity",
+          releaseDate: c.set?.releaseDate || "9999-01-01",
+          isFoil: Boolean(c.variant === "holo" || c.variant === "reverse"),
+        }));
 
-            if (c.set?.id) {
-              try {
-                const setData = await sdk.set.get(c.set.id);
-
-                if (setData?.releaseDate) {
-                  releaseDate = setData.releaseDate;
-                }
-              } catch {}    
-            }
-
-            return {
-              id: c.id,
-              name: c.name,
-              imageUrl: c.getImageURL("high", "png") || "/fallback.png",
-              set: c.set?.name || "Unknown Set",
-              rarity: c.rarity || "Unknown rarity",
-              releaseDate,
-            };
-          })
-        );
-
-        const sorted = cardsWithSetData.sort(
+        mapped.sort(
           (a, b) =>
-            new Date(b.releaseDate!).getTime() -
-            new Date(a.releaseDate!).getTime()
+            new Date(b.releaseDate).getTime() -
+            new Date(a.releaseDate).getTime(),
         );
 
-        setVersions(sorted);
-        setSelectedCard(sorted[0]);
+        setVersions(mapped);
+        setSelectedCard(mapped[0]);
+        setSelectedCollections([]);
+        setManualFoil(false);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
+        setVersions([]);
+        setSelectedCard(null);
       }
+
+      setLoading(false);
     };
 
-    fetchVersions();
+    fetchData();
   }, [cardName]);
 
-  const getCount = (id: string) =>
-    cards.filter((c) => c.id === id).length;
+  if (loading) return <div className="window-backdrop">Loading...</div>;
+
+  if (!selectedCard) {
+    return (
+      <div className="window-backdrop">
+        <div className="window-content">
+          <p>Card not found</p>
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  const finalFoil = selectedCard.isFoil || manualFoil;
 
   return (
     <div className="window-backdrop" onClick={onClose}>
       <div className="window-content" onClick={(e) => e.stopPropagation()}>
-        <button className="window-close" onClick={onClose}>X</button>
+        <button className="window-close" onClick={onClose}>
+          X
+        </button>
 
-        {loading || !selectedCard ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="window-grid">
-            <div className="left-panel">
-              <img src={selectedCard.imageUrl} alt={selectedCard.name} />
-            </div>
-
-            <div className="right-panel">
-              <h2>{selectedCard.name}</h2>
-
-              <label>Set:</label>
-              <select
-                value={selectedCard.id}
-                onChange={(e) => {
-                  const found = versions.find(v => v.id === e.target.value);
-                  if (found) setSelectedCard(found);
-                }}
-              >
-                {versions.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.set} ({c.releaseDate?.slice(0, 4)}) — {c.rarity}
-                  </option>
-                ))}
-              </select>
-
-              <p>{selectedCard.set}</p>
-              <p>{selectedCard.rarity}</p>
-
-              <div className="quantity-stepper">
-                <button onClick={() => removeFromCollection(selectedCard)}>−</button>
-                <span>{getCount(selectedCard.id)}</span>
-                <button onClick={() => addToCollection(selectedCard)}>+</button>
-              </div>
-            </div>
+        <div className="window-grid">
+          <div className="left-panel">
+            <img src={selectedCard.imageUrl} alt={selectedCard.name} />
           </div>
-        )}
+
+          <div className="right-panel">
+            <h2>{selectedCard.name}</h2>
+
+            {/* VARIANTS */}
+            <select
+              value={selectedCard.id}
+              onChange={(e) => {
+                const found = versions.find((v) => v.id === e.target.value);
+                if (found) setSelectedCard(found);
+              }}
+            >
+              {versions.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.set} - {v.rarity}
+                </option>
+              ))}
+            </select>
+
+            {/* FOIL */}
+            <label>
+              <input
+                type="checkbox"
+                checked={manualFoil}
+                onChange={(e) => setManualFoil(e.target.checked)}
+              />
+              Foil ✨
+            </label>
+
+            <p>Foil: {finalFoil ? "Yes" : "No"}</p>
+
+            {/* COLLECTION SELECT */}
+            <select
+              value=""
+              onChange={(e) => {
+                const id = e.target.value;
+                if (!id) return;
+
+                setSelectedCollections((prev) =>
+                  prev.includes(id) ? prev : [...prev, id],
+                );
+              }}
+            >
+              <option value="">Add to collection</option>
+              {collections.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            {/* TAGS */}
+            <div>
+              {selectedCollections.map((id) => {
+                const col = collections.find((c) => c.id === id);
+                if (!col) return null;
+
+                return (
+                  <span key={id}>
+                    {col.name}
+                    <button
+                      onClick={() =>
+                        setSelectedCollections((prev) =>
+                          prev.filter((x) => x !== id),
+                        )
+                      }
+                    >
+                      x
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* ACTIONS */}
+            <button
+              onClick={() => {
+                selectedCollections.forEach((id) => {
+                  addCard({ ...selectedCard, isFoil: finalFoil }, id);
+                });
+              }}
+            >
+              Add to Collections
+            </button>
+
+            <button
+              onClick={() => addCard({ ...selectedCard, isFoil: finalFoil })}
+            >
+              Add to Main
+            </button>
+
+            <button onClick={() => removeCard(selectedCard)}>Remove</button>
+
+            <p>In main: {getCountMain(selectedCard.id)}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
