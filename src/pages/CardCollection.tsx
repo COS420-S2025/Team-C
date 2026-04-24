@@ -1,23 +1,17 @@
 import { useState } from "react";
 import "./CardCollection.css";
-import type { CardVersion } from "../components/CardWindow/CardWindow";
 import CardWindow from "../components/CardWindow/CardWindow";
 import type { User } from "../interfaces/User";
 import { CollectionWindow } from "../components/CollectionWindow/CollectionWindow";
+import { useCollections } from "./CollectionContext";
+import type { CardVersion } from "../types/card";
 
 type CollectionProps = {
-  cards: CardVersion[];
-  addCard: (card: CardVersion) => void;
-  removeCard: (card: CardVersion) => void;
   userData: User | null;
 };
 
-export default function Collection({
-  cards,
-  addCard,
-  removeCard,
-  userData,
-}: CollectionProps) {
+export default function Collection({ userData }: CollectionProps) {
+  const { main, removeCard } = useCollections();
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
   const [creatingNewCollection, setCreatingNewCollection] =
@@ -26,7 +20,7 @@ export default function Collection({
   const [collectionToDisplay, setCollectionToDisplay] = useState<string>("");
 
   const groupedCards = Object.values(
-    cards.reduce((acc: any, card) => {
+    main.reduce<Record<string, CardVersion & { count: number }>>((acc, card) => {
       if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
       else acc[card.id].count++;
       return acc;
@@ -54,7 +48,7 @@ export default function Collection({
           className="card-grid"
           style={{ gridTemplateColumns: `repeat(${cardsPerRow}, 1fr)` }}
         >
-          {groupedCards.map((card: any) => (
+          {groupedCards.map((card) => (
             <div
               className="card"
               key={card.id}

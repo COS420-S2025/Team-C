@@ -1,16 +1,38 @@
 import React, { useEffect, useState } from "react";
 import "./CardWindow.css";
 import { useCollections } from "../../pages/CollectionContext";
+import type { CardVersion } from "../../types/card";
 
-export type CardVersion = {
+export type { CardVersion };
+
+type TcgdexListItem = { id: string };
+
+type TcgdexSetInfo = { name?: string; releaseDate?: string };
+
+type TcgdexFullCard = {
   id: string;
   name: string;
-  imageUrl: string;
-  set: string;
-  rarity: string;
-  releaseDate: string;
-  isFoil: boolean;
+  image?: { high?: string } | string;
+  set?: TcgdexSetInfo;
+  rarity?: string;
+  variant?: string;
 };
+
+function toCardVersion(c: TcgdexFullCard): CardVersion {
+  const imageUrl =
+    typeof c.image === "object" && c.image !== null
+      ? c.image.high ?? ""
+      : (c.image ?? "");
+  return {
+    id: c.id,
+    name: c.name,
+    imageUrl,
+    set: c.set?.name ?? "Unknown Set",
+    rarity: c.rarity ?? "Unknown Rarity",
+    releaseDate: c.set?.releaseDate ?? "9999-01-01",
+    isFoil: c.variant === "holo" || c.variant === "reverse",
+  };
+}
 
 type CardWindowProps = {
   cardName: string;
@@ -38,7 +60,7 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
           `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(cardName)}`,
         );
 
-        const data = await res.json();
+        const data: unknown = await res.json();
 
         if (!Array.isArray(data)) {
           setVersions([]);
@@ -47,22 +69,17 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
           return;
         }
 
+        const list = data as TcgdexListItem[];
         const fullCards = await Promise.all(
-          data.map(async (c: any) => {
-            const r = await fetch(`https://api.tcgdex.net/v2/en/cards/${c.id}`);
-            return await r.json();
+          list.map(async (item) => {
+            const r = await fetch(
+              `https://api.tcgdex.net/v2/en/cards/${item.id}`,
+            );
+            return (await r.json()) as TcgdexFullCard;
           }),
         );
 
-        const mapped: CardVersion[] = fullCards.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          imageUrl: c.image?.high || c.image || "",
-          set: c.set?.name || "Unknown Set",
-          rarity: c.rarity || "Unknown Rarity",
-          releaseDate: c.set?.releaseDate || "9999-01-01",
-          isFoil: Boolean(c.variant === "holo" || c.variant === "reverse"),
-        }));
+        const mapped: CardVersion[] = fullCards.map((c) => toCardVersion(c));
 
         mapped.sort(
           (a, b) =>

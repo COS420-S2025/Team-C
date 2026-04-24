@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import type { CardVersion } from "../components/CardWindow/CardWindow";
+import type { CardVersion } from "../types/card";
 
 export type Collection = {
   id: string;
@@ -18,10 +18,17 @@ type CollectionsContextType = {
 
 const CollectionsContext = createContext<CollectionsContextType | null>(null);
 
-export const CollectionsProvider: React.FC<{ children: React.ReactNode }> = ({
+type ProviderProps = {
+  children: React.ReactNode;
+  /** For tests or hydration; not reactive after first mount. */
+  initialMain?: CardVersion[];
+};
+
+export const CollectionsProvider: React.FC<ProviderProps> = ({
   children,
+  initialMain = [],
 }) => {
-  const [main, setMain] = useState<CardVersion[]>([]);
+  const [main, setMain] = useState<CardVersion[]>(initialMain);
   const [collections, setCollections] = useState<Collection[]>([]);
 
   const addCard = (card: CardVersion, collectionId?: string) => {

@@ -1,63 +1,48 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import CardCollection from "./CardCollection";
+import { CollectionsProvider } from "./CollectionContext";
+import type { CardVersion } from "../types/card";
 
-/*Test to check if a card is displayed when card details are provided properly */
+const sampleCard: CardVersion = {
+  id: "xy7-54",
+  name: "Gardevoir",
+  imageUrl: "https://example.com/gardevoir.png",
+  set: "Steam Siege",
+  rarity: "Rare",
+  releaseDate: "2016-02-12",
+  isFoil: false,
+};
+
+function renderCollection(initialMain: CardVersion[] = []) {
+  return render(
+    <CollectionsProvider initialMain={initialMain}>
+      <CardCollection userData={null} />
+    </CollectionsProvider>,
+  );
+}
+
 describe("CardCollection", () => {
-  test("displays a card when cards are provided", () => {
-    const cards = [
-      {
-        id: "xy7-54",
-        name: "Gardevoir",
-        imageUrl: "https://example.com/gardevoir.png",
-        set: "Steam Siege",
-        rarity: "Rare",
-      },
-    ];
-
-    render(
-      <CardCollection
-        addCard={jest.fn()}
-        cards={cards}
-        removeCard={jest.fn()}
-      />,
-    );
+  test("displays a card when cards are in the main collection", () => {
+    renderCollection([sampleCard]);
 
     expect(screen.getByText("Gardevoir")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Gardevoir" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Gardevoir" }),
+    ).toBeInTheDocument();
   });
 
-  /*Test to check if no cards are displayed when there are no cards in the collection*/
-  test("shows empty state when no cards are provided", () => {
-    render(
-      <CardCollection addCard={jest.fn()} cards={[]} removeCard={jest.fn()} />,
-    );
+  test("shows empty state when there are no cards", () => {
+    renderCollection();
 
     expect(screen.getByText("No cards added yet!")).toBeInTheDocument();
   });
 
-  /*Test to check if a card is removed from the page when the remove button is clicked*/
-  test("calls removeCard when remove button is clicked", () => {
-    const card = {
-      id: "xy7-54",
-      name: "Gardevoir",
-      imageUrl: "https://example.com/gardevoir.png",
-      set: "Steam Siege",
-      rarity: "Rare",
-    };
-    const removeCard = jest.fn();
-
-    render(
-      <CardCollection
-        addCard={jest.fn()}
-        cards={[card]}
-        removeCard={removeCard}
-      />,
-    );
+  test("removes card from the page when the remove button is clicked", () => {
+    renderCollection([sampleCard]);
 
     fireEvent.click(screen.getByRole("button", { name: "Remove" }));
 
-    expect(removeCard).toHaveBeenCalledTimes(1);
-    expect(removeCard).toHaveBeenCalledWith(expect.objectContaining(card));
+    expect(screen.queryByText("Gardevoir")).not.toBeInTheDocument();
   });
 });

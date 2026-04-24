@@ -1,18 +1,17 @@
 import { useState } from "react";
-import "../pages/MyCards.css";
-import CardWindow, {
-  type CardVersion,
-} from "../components/CardWindow/CardWindow";
+import "./MyCards.css";
+import CardWindow from "../components/CardWindow/CardWindow";
 import { useCollections } from "./CollectionContext";
+import type { CardVersion } from "../types/card";
 
-export default function CardCollection() {
+export default function MyCards() {
   const { main, removeCard } = useCollections();
 
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
   const groupedCards = Object.values(
-    main.reduce((acc: any, card) => {
+    main.reduce<Record<string, CardVersion & { count: number }>>((acc, card) => {
       if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
       else acc[card.id].count++;
       return acc;
@@ -40,7 +39,7 @@ export default function CardCollection() {
           className="card-grid"
           style={{ gridTemplateColumns: `repeat(${cardsPerRow}, 1fr)` }}
         >
-          {groupedCards.map((card: any) => (
+          {groupedCards.map((card) => (
             <div
               className="card"
               key={card.id}

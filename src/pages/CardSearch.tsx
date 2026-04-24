@@ -2,12 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import "./CardSearch.css";
 import CardWindow from "../components/CardWindow/CardWindow";
 
+type SearchListItem = {
+  id: string;
+  name: string;
+  image: string;
+};
+
 export default function CardSearch() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchListItem[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
-  const cache = useRef<{ [key: string]: any[] }>({});
+  const cache = useRef<Record<string, SearchListItem[]>>({});
 
   useEffect(() => {
     const q = query.trim().toLowerCase();
@@ -24,21 +30,23 @@ export default function CardSearch() {
 
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${q}`);
-
-        const data = await res.json();
+        const res = await fetch(
+          `https://api.tcgdex.net/v2/en/cards?name=${q}`,
+        );
+        const data: unknown = await res.json();
+        if (!Array.isArray(data)) {
+          setResults([]);
+          return;
+        }
 
         const seen = new Set<string>();
 
-        const filtered = (data || [])
-          .filter((c: any) => {
+        const filtered = (data as SearchListItem[])
+          .filter((c) => {
             if (!c?.name) return false;
-
             const base = c.name.split(" ")[0];
-
             if (seen.has(base)) return false;
             seen.add(base);
-
             return true;
           })
           .slice(0, 20);

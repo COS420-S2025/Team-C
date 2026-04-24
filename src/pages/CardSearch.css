@@ -1,14 +1,4 @@
 /* ==========================
-   Reset html & body
-   ========================== */
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* ==========================
    Main container
    ========================== */
 .app-page {
@@ -48,46 +38,6 @@ body {
 }
 
 /* ==========================
-   Button styling
-   ========================== */
-.add-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4caf50;
-  color: black;
-  cursor: pointer;
-}
-
-.add-button:hover {
-  background-color: #45a049;
-}
-
-/* ==========================
-   Card list container
-   ========================== */
-.card-list {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-/* ==========================
-   Individual card styling
-   ========================== */
-.card-item {
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  min-width: 100px;
-  text-align: center;
-}
-
-/* ==========================
    Dropdown menu styling
    ========================== */
 .dropdown {
@@ -107,7 +57,6 @@ body {
   color: black;
 }
 
-/* Dropdown items */
 .dropdown li {
   padding: 8px 12px;
   cursor: pointer;
@@ -115,11 +64,11 @@ body {
   color: black;
 }
 
-.dropdown li:hover {
+.dropdown li:hover,
+.dropdown-item:hover {
   background-color: #f0f0f0;
 }
 
-/* Enhanced dropdown item layout */
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -128,23 +77,8 @@ body {
   cursor: pointer;
 }
 
-.dropdown-item:hover {
-  background: #eee;
-}
-
 .thumb {
   width: 40px;
   height: auto;
   border-radius: 5px;
-}
-
-.types {
-  margin-left: auto;
-  display: flex;
-  gap: 5px;
-}
-
-.type-icon {
-  width: 20px;
-  height: 20px;
 }
