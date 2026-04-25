@@ -1,7 +1,17 @@
 import { useState } from "react";
-import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  type UserCredential,
+} from "firebase/auth";
 import { auth, db, googleAuthProvider } from "../..";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  DocumentReference,
+  DocumentSnapshot,
+  getDoc,
+  type DocumentData,
+} from "firebase/firestore";
 import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Login: React.FC<AccountPageDisplayProps> = ({
@@ -19,10 +29,15 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
-      .then(async (response) => {
-        const userRef = doc(db, "users", response.user.uid);
-        const userDoc = await getDoc(userRef);
-        const userData = userDoc.data();
+      .then(async (response: UserCredential) => {
+        const userRef: DocumentReference<DocumentData, DocumentData> = doc(
+          db,
+          "users",
+          response.user.uid,
+        );
+        const userDoc: DocumentSnapshot<DocumentData, DocumentData> =
+          await getDoc(userRef);
+        const userData: DocumentData | undefined = userDoc.data();
 
         if (!userData) {
           throw new Error("Account not found!");
@@ -47,10 +62,15 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
     // use firebase to sign in
     signInWithEmailAndPassword(auth, email, password)
-      .then(async (response) => {
-        const userRef = doc(db, "users", response.user.uid);
-        const userDoc = await getDoc(userRef);
-        const userData = userDoc.data();
+      .then(async (response: UserCredential) => {
+        const userRef: DocumentReference<DocumentData, DocumentData> = doc(
+          db,
+          "users",
+          response.user.uid,
+        );
+        const userDoc: DocumentSnapshot<DocumentData, DocumentData> =
+          await getDoc(userRef);
+        const userData: DocumentData | undefined = userDoc.data();
 
         if (!userData) {
           throw new Error("Account not found!");
