@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./CardWindow.css";
-import { useCollections } from "../../pages/CollectionContext";
+import { useCollections, type Collection } from "../../pages/CollectionContext";
 import type { CardVersion } from "../../types/card";
+import type { User } from "../../interfaces/User";
 
 export type { CardVersion };
 
@@ -25,7 +26,7 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
   const imageUrl =
     typeof c.image === "string"
       ? `${c.image}/high.png`
-      : c.image?.high ?? c.image?.low ?? "";
+      : (c.image?.high ?? c.image?.low ?? "");
   return {
     id: c.id,
     name: c.name,
@@ -40,9 +41,14 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
 type CardWindowProps = {
   cardName: string;
   onClose: () => void;
+  userData: User | undefined;
 };
 
-const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
+const CardWindow: React.FC<CardWindowProps> = ({
+  cardName,
+  onClose,
+  userData,
+}) => {
   const { main, addCard, removeCard, collections } = useCollections();
 
   const [versions, setVersions] = useState<CardVersion[]>([]);
@@ -176,7 +182,7 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
               }}
             >
               <option value="">Add to collection</option>
-              {collections.map((c) => (
+              {collections.map((c: Collection) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -210,7 +216,7 @@ const CardWindow: React.FC<CardWindowProps> = ({ cardName, onClose }) => {
             <button
               onClick={() => {
                 selectedCollections.forEach((id) => {
-                  addCard({ ...selectedCard, isFoil: finalFoil }, id);
+                  addCard({ ...selectedCard, isFoil: finalFoil }, id, userData);
                 });
               }}
             >

@@ -9,12 +9,12 @@ import type { User } from "../../interfaces/User";
 import MyCards from "../../pages/MyCards";
 
 export type AccountProps = {
-  setUserData: (userData: User | null) => void;
-  userData: User | null;
+  setUserData: (userData: User | undefined) => void;
+  userData: User | undefined;
 };
 
 export default function Navbar(): React.JSX.Element {
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<User | undefined>(undefined);
 
   return (
     <Router>
@@ -50,7 +50,7 @@ export default function Navbar(): React.JSX.Element {
           element={<Collection userData={userData} />}
         />
 
-        <Route path="/search" element={<CardSearch />} />
+        <Route path="/search" element={<CardSearch userData={userData} />} />
 
         <Route
           path="/account"
@@ -59,7 +59,7 @@ export default function Navbar(): React.JSX.Element {
           }
         />
 
-        <Route path="/all" element={<MyCards />} />
+        <Route path="/all" element={<MyCards userData={userData} />} />
       </Routes>
     </Router>
   );

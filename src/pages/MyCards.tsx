@@ -3,19 +3,27 @@ import "./MyCards.css";
 import CardWindow from "../components/CardWindow/CardWindow";
 import { useCollections } from "./CollectionContext";
 import type { CardVersion } from "../types/card";
+import type { User } from "../interfaces/User";
 
-export default function MyCards() {
+type MyCardsProps = {
+  userData: User | undefined;
+};
+
+export default function MyCards({ userData }: MyCardsProps) {
   const { main, removeCard } = useCollections();
 
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
   const groupedCards = Object.values(
-    main.reduce<Record<string, CardVersion & { count: number }>>((acc, card) => {
-      if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
-      else acc[card.id].count++;
-      return acc;
-    }, {}),
+    main.reduce<Record<string, CardVersion & { count: number }>>(
+      (acc, card) => {
+        if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
+        else acc[card.id].count++;
+        return acc;
+      },
+      {},
+    ),
   );
 
   return (
@@ -70,6 +78,7 @@ export default function MyCards() {
         <CardWindow
           cardName={selectedCard.name}
           onClose={() => setSelectedCard(null)}
+          userData={userData}
         />
       )}
     </div>

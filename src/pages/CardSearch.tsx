@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./CardSearch.css";
 import CardWindow from "../components/CardWindow/CardWindow";
+import type { User } from "../interfaces/User";
 
 type SearchListItem = {
   id: string;
@@ -8,7 +9,11 @@ type SearchListItem = {
   image: string;
 };
 
-export default function CardSearch() {
+type CardSearchProps = {
+  userData: User | undefined;
+};
+
+export default function CardSearch({ userData }: CardSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchListItem[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -30,9 +35,7 @@ export default function CardSearch() {
 
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `https://api.tcgdex.net/v2/en/cards?name=${q}`,
-        );
+        const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${q}`);
         const data: unknown = await res.json();
         if (!Array.isArray(data)) {
           setResults([]);
@@ -97,7 +100,11 @@ export default function CardSearch() {
       </div>
 
       {selected && (
-        <CardWindow cardName={selected} onClose={() => setSelected(null)} />
+        <CardWindow
+          cardName={selected}
+          onClose={() => setSelected(null)}
+          userData={userData}
+        />
       )}
     </div>
   );

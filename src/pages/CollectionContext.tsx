@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
 import type { CardVersion } from "../types/card";
+import { db } from "..";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import type { User } from "../interfaces/User";
 
 export type Collection = {
   id: string;
@@ -11,7 +14,7 @@ export type Collection = {
 type CollectionsContextType = {
   main: CardVersion[];
   collections: Collection[];
-  addCard: (card: CardVersion, collectionId?: string) => void;
+  addCard: (card: CardVersion, collectionId?: string, userData?: User) => void;
   removeCard: (card: CardVersion, collectionId?: string) => void;
   createCollection: (name: string) => void;
 };
@@ -31,10 +34,14 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
   const [main, setMain] = useState<CardVersion[]>(initialMain);
   const [collections, setCollections] = useState<Collection[]>([]);
 
-  const addCard = (card: CardVersion, collectionId?: string) => {
+  const addCard = (
+    card: CardVersion,
+    collectionId?: string,
+    userData?: User,
+  ) => {
     setMain((prev) => [...prev, card]);
 
-    if (collectionId) {
+    if (collectionId && userData) {
       setCollections((prev) =>
         prev.map((col) =>
           col.id === collectionId
@@ -42,10 +49,41 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
             : col,
         ),
       );
+
+      const thisCol = collections.find(
+        (collection: Collection) =>
+          collection.id === collectionId && collection,
+      );
+
+      thisCol &&
+        setDoc(
+          doc(
+            db,
+            "users",
+            userData.uid,
+            "collections",
+            thisCol.name,
+            "cards",
+            card.id,
+          ),
+          {
+            id: card.id,
+            name: card.name,
+            imageURL: card.imageUrl,
+            set: card.set,
+            rarity: card.rarity,
+            releaseDate: card.releaseDate,
+            isFoil: card.isFoil,
+          },
+        );
     }
   };
 
-  const removeCard = (card: CardVersion, collectionId?: string) => {
+  const removeCard = (
+    card: CardVersion,
+    collectionId?: string,
+    userData?: User,
+  ) => {
     setMain((prev) => {
       const idx = prev.findIndex((c) => c.id === card.id);
       if (idx === -1) return prev;
@@ -54,7 +92,7 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
       return copy;
     });
 
-    if (collectionId) {
+    if (collectionId && userData) {
       setCollections((prev) =>
         prev.map((col) => {
           if (col.id !== collectionId) return col;
@@ -67,6 +105,18 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
 
           return { ...col, cards: copy };
         }),
+      );
+      setDoc(
+        doc(
+          db,
+          "users",
+          userData.uid,
+          "collections",
+          collectionId,
+          "cards",
+          card.id,
+        ),
+        {},
       );
     }
   };

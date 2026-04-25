@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import type { User } from "../../interfaces/User";
 import { db } from "../..";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useCollections } from "../../pages/CollectionContext";
 
 type CollectionWindowProps = {
-  userData: User | null;
+  userData: User | undefined;
   onClose: () => void;
   setMessage: (message: string) => void;
 };
@@ -14,6 +15,7 @@ export const CollectionWindow: React.FC<CollectionWindowProps> = ({
   onClose,
   setMessage,
 }) => {
+  const { createCollection } = useCollections();
   const [newCollectionName, setNewCollectionName] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -35,6 +37,7 @@ export const CollectionWindow: React.FC<CollectionWindowProps> = ({
           doc(db, "users", userData.uid, "collections", newCollectionName),
           {},
         );
+        createCollection(newCollectionName);
         setMessage(`Collection '${newCollectionName}' created!`);
         setError("");
         setNewCollectionName("");

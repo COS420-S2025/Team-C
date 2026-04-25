@@ -7,11 +7,11 @@ import { useCollections } from "./CollectionContext";
 import type { CardVersion } from "../types/card";
 
 type CollectionProps = {
-  userData: User | null;
+  userData: User | undefined;
 };
 
 export default function Collection({ userData }: CollectionProps) {
-  const { main, removeCard } = useCollections();
+  const { main } = useCollections();
   const [cardsPerRow, setCardsPerRow] = useState(5);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
   const [creatingNewCollection, setCreatingNewCollection] =
@@ -19,16 +19,16 @@ export default function Collection({ userData }: CollectionProps) {
   const [message, setMessage] = useState<string>("");
   const [collectionToDisplay, setCollectionToDisplay] = useState<string>("");
 
-  const groupedCards = Object.values(
-    main.reduce<Record<string, CardVersion & { count: number }>>(
-      (acc, card) => {
-        if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
-        else acc[card.id].count++;
-        return acc;
-      },
-      {},
-    ),
-  );
+  // const groupedCards = Object.values(
+  //   main.reduce<Record<string, CardVersion & { count: number }>>(
+  //     (acc, card) => {
+  //       if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
+  //       else acc[card.id].count++;
+  //       return acc;
+  //     },
+  //     {},
+  //   ),
+  // );
 
   return (
     <div className="app-page">
