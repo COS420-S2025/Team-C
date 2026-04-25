@@ -19,7 +19,8 @@ type CollectionsContextType = {
   createCollection: (name: string) => void;
 };
 
-const CollectionsContext = createContext<CollectionsContextType | null>(null);
+const CollectionsContext: React.Context<CollectionsContextType | null> =
+  createContext<CollectionsContextType | null>(null);
 
 type ProviderProps = {
   children: React.ReactNode;
@@ -39,18 +40,18 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
     collectionId?: string,
     userData?: User,
   ) => {
-    setMain((prev) => [...prev, card]);
+    setMain((prev: CardVersion[]) => [...prev, card]);
 
     if (collectionId && userData) {
-      setCollections((prev) =>
-        prev.map((col) =>
+      setCollections((prev: Collection[]) =>
+        prev.map((col: Collection) =>
           col.id === collectionId
             ? { ...col, cards: [...col.cards, card] }
             : col,
         ),
       );
 
-      const thisCol = collections.find(
+      const thisCol: Collection | undefined = collections.find(
         (collection: Collection) =>
           collection.id === collectionId && collection,
       );
@@ -84,23 +85,25 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
     collectionId?: string,
     userData?: User,
   ) => {
-    setMain((prev) => {
-      const idx = prev.findIndex((c) => c.id === card.id);
+    setMain((prev: CardVersion[]) => {
+      const idx: number = prev.findIndex((c: CardVersion) => c.id === card.id);
       if (idx === -1) return prev;
-      const copy = [...prev];
+      const copy: CardVersion[] = [...prev];
       copy.splice(idx, 1);
       return copy;
     });
 
     if (collectionId && userData) {
-      setCollections((prev) =>
-        prev.map((col) => {
+      setCollections((prev: Collection[]) =>
+        prev.map((col: Collection) => {
           if (col.id !== collectionId) return col;
 
-          const idx = col.cards.findIndex((c) => c.id === card.id);
+          const idx: number = col.cards.findIndex(
+            (c: CardVersion) => c.id === card.id,
+          );
           if (idx === -1) return col;
 
-          const copy = [...col.cards];
+          const copy: CardVersion[] = [...col.cards];
           copy.splice(idx, 1);
 
           return { ...col, cards: copy };
@@ -122,7 +125,7 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
   };
 
   const createCollection = (name: string) => {
-    setCollections((prev) => [
+    setCollections((prev: Collection[]) => [
       ...prev,
       { id: crypto.randomUUID(), name, cards: [] },
     ]);
@@ -137,8 +140,8 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
   );
 };
 
-export const useCollections = () => {
-  const ctx = useContext(CollectionsContext);
+export const useCollections = (): CollectionsContextType => {
+  const ctx: CollectionsContextType | null = useContext(CollectionsContext);
   if (!ctx) throw new Error("useCollections must be used within provider");
   return ctx;
 };
