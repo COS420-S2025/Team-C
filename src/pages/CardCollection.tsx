@@ -20,18 +20,21 @@ export default function Collection({ userData }: CollectionProps) {
   const [collectionToDisplay, setCollectionToDisplay] = useState<string>("");
 
   const groupedCards = Object.values(
-    main.reduce<Record<string, CardVersion & { count: number }>>((acc, card) => {
-      if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
-      else acc[card.id].count++;
-      return acc;
-    }, {}),
+    main.reduce<Record<string, CardVersion & { count: number }>>(
+      (acc, card) => {
+        if (!acc[card.id]) acc[card.id] = { ...card, count: 1 };
+        else acc[card.id].count++;
+        return acc;
+      },
+      {},
+    ),
   );
 
   return (
     <div className="app-page">
       <h1>Collection</h1>
 
-      <select
+      {/* <select
         value={cardsPerRow}
         onChange={(e) => setCardsPerRow(Number(e.target.value))}
       >
@@ -77,7 +80,7 @@ export default function Collection({ userData }: CollectionProps) {
           cardName={selectedCard.name}
           onClose={() => setSelectedCard(null)}
         />
-      )}
+      )} */}
       {userData && (
         <div>
           <button
