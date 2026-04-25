@@ -12,7 +12,10 @@ type TcgdexSetInfo = { name?: string; releaseDate?: string };
 type TcgdexFullCard = {
   id: string;
   name: string;
-  image?: { high?: string } | string;
+  // tcgdex returns either:
+  // - base path string (used like `${image}/high.png`)
+  // - object with `high`/`low` URLs
+  image?: { high?: string; low?: string } | string;
   set?: TcgdexSetInfo;
   rarity?: string;
   variant?: string;
@@ -20,9 +23,9 @@ type TcgdexFullCard = {
 
 function toCardVersion(c: TcgdexFullCard): CardVersion {
   const imageUrl =
-    typeof c.image === "object" && c.image !== null
-      ? c.image.high ?? ""
-      : (c.image ?? "");
+    typeof c.image === "string"
+      ? `${c.image}/high.png`
+      : c.image?.high ?? c.image?.low ?? "";
   return {
     id: c.id,
     name: c.name,
