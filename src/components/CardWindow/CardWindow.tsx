@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./CardWindow.css";
 import { useCollections, type Collection } from "../../pages/CollectionContext";
-import type { CardVersion } from "../../types/card";
+import type { CardVersion } from "../../types/CardVersion";
 import type { User } from "../../interfaces/User";
 
 export type { CardVersion };
@@ -63,7 +63,9 @@ const CardWindow: React.FC<CardWindowProps> = ({
 
   const getCountMain = (id: string) => main.filter((c) => c.id === id).length;
   const getReleaseMs = (v: CardVersion) =>
-    v.releaseDate ? new Date(v.releaseDate).getTime() : Number.NEGATIVE_INFINITY;
+    v.releaseDate
+      ? new Date(v.releaseDate).getTime()
+      : Number.NEGATIVE_INFINITY;
   const getSetYear = (v: CardVersion) =>
     v.releaseDate ? String(new Date(v.releaseDate).getFullYear()) : "—";
 
@@ -97,9 +99,7 @@ const CardWindow: React.FC<CardWindowProps> = ({
 
         const mapped: CardVersion[] = fullCards.map((c) => toCardVersion(c));
 
-        mapped.sort(
-          (a, b) => getReleaseMs(b) - getReleaseMs(a),
-        );
+        mapped.sort((a, b) => getReleaseMs(b) - getReleaseMs(a));
 
         setVersions(mapped);
         setSelectedCard(mapped[0]);
@@ -207,9 +207,7 @@ const CardWindow: React.FC<CardWindowProps> = ({
                   {col.name}
                   <button
                     className="collection-tag-remove"
-                    onClick={() =>
-                      removeCard(selectedCard, col.id, userData)
-                    }
+                    onClick={() => removeCard(selectedCard, col.id, userData)}
                     aria-label={`Remove from ${col.name}`}
                     title={`Remove from ${col.name}`}
                   >

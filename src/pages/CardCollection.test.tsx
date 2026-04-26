@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import CardCollection from "./CardCollection";
 import { CollectionsProvider } from "./CollectionContext";
-import type { CardVersion } from "../types/card";
+import type { CardVersion } from "../types/CardVersion";
 
 const sampleCard: CardVersion = {
   id: "xy7-54",
@@ -27,9 +27,7 @@ describe("CardCollection", () => {
     renderCollection([sampleCard]);
 
     expect(screen.getByText("Gardevoir")).toBeInTheDocument();
-    expect(
-      screen.getByRole("img", { name: "Gardevoir" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Gardevoir" })).toBeInTheDocument();
   });
 
   test("shows empty state when there are no cards", () => {

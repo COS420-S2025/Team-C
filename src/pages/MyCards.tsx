@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./MyCards.css";
 import CardWindow from "../components/CardWindow/CardWindow";
 import { useCollections } from "./CollectionContext";
-import type { CardVersion } from "../types/card";
+import type { CardVersion } from "../types/CardVersion";
 import type { User } from "../interfaces/User";
 
 type MyCardsProps = {

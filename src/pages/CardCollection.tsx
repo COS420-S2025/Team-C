@@ -4,7 +4,7 @@ import CardWindow from "../components/CardWindow/CardWindow";
 import type { User } from "../interfaces/User";
 import { CollectionWindow } from "../components/CollectionWindow/CollectionWindow";
 import { useCollections } from "./CollectionContext";
-import type { CardVersion } from "../types/card";
+import type { CardVersion } from "../types/CardVersion";
 
 type CollectionProps = {
   userData: User | undefined;

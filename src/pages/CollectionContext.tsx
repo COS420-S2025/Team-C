@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import type { CardVersion } from "../types/card";
+import type { CardVersion } from "../types/CardVersion";
 import { db } from "..";
 import { doc, setDoc } from "firebase/firestore";
 import type { User } from "../interfaces/User";
@@ -15,7 +15,11 @@ type CollectionsContextType = {
   main: CardVersion[];
   collections: Collection[];
   addCard: (card: CardVersion, collectionId?: string, userData?: User) => void;
-  removeCard: (card: CardVersion, collectionId?: string, userData?: User) => void;
+  removeCard: (
+    card: CardVersion,
+    collectionId?: string,
+    userData?: User,
+  ) => void;
   createCollection: (name: string) => void;
 };
 
