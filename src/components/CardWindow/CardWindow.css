@@ -93,3 +93,68 @@
   padding: 8px 10px;
   cursor: pointer;
 }
+
+.collection-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.collection-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: #f7f7f7;
+}
+
+.collection-tag-remove {
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.main-count-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.main-count-label {
+  font-weight: 600;
+}
+
+.main-count-value {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.main-count-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.main-count-plus {
+  background: #16a34a;
+}
+
+.main-count-minus {
+  background: #dc2626;
+}
+
+.main-count-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

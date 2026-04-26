@@ -5,5 +5,6 @@ export type CardVersion = {
   set: string;
   rarity: string;
   releaseDate: string;
+  numberInSet: string;
   isFoil: boolean;
 };

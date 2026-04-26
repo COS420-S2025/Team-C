@@ -13,6 +13,7 @@ type TcgdexSetInfo = { name?: string; releaseDate?: string };
 type TcgdexFullCard = {
   id: string;
   name: string;
+  localId?: string;
   // tcgdex returns either:
   // - base path string (used like `${image}/high.png`)
   // - object with `high`/`low` URLs
@@ -33,7 +34,8 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
     imageUrl,
     set: c.set?.name ?? "Unknown Set",
     rarity: c.rarity ?? "Unknown Rarity",
-    releaseDate: c.set?.releaseDate ?? "9999-01-01",
+    releaseDate: c.set?.releaseDate ?? "",
+    numberInSet: c.localId ?? "",
     isFoil: c.variant === "holo" || c.variant === "reverse",
   };
 }
@@ -54,11 +56,16 @@ const CardWindow: React.FC<CardWindowProps> = ({
   const [versions, setVersions] = useState<CardVersion[]>([]);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
 
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
-  const [manualFoil, setManualFoil] = useState(false);
+  const [manualFoilById, setManualFoilById] = useState<Record<string, boolean>>(
+    {},
+  );
   const [loading, setLoading] = useState(true);
 
   const getCountMain = (id: string) => main.filter((c) => c.id === id).length;
+  const getReleaseMs = (v: CardVersion) =>
+    v.releaseDate ? new Date(v.releaseDate).getTime() : Number.NEGATIVE_INFINITY;
+  const getSetYear = (v: CardVersion) =>
+    v.releaseDate ? String(new Date(v.releaseDate).getFullYear()) : "—";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,15 +98,12 @@ const CardWindow: React.FC<CardWindowProps> = ({
         const mapped: CardVersion[] = fullCards.map((c) => toCardVersion(c));
 
         mapped.sort(
-          (a, b) =>
-            new Date(b.releaseDate).getTime() -
-            new Date(a.releaseDate).getTime(),
+          (a, b) => getReleaseMs(b) - getReleaseMs(a),
         );
 
         setVersions(mapped);
         setSelectedCard(mapped[0]);
-        setSelectedCollections([]);
-        setManualFoil(false);
+        setManualFoilById({});
       } catch (err) {
         console.error(err);
         setVersions([]);
@@ -125,7 +129,12 @@ const CardWindow: React.FC<CardWindowProps> = ({
     );
   }
 
+  const manualFoil = manualFoilById[selectedCard.id] ?? false;
   const finalFoil = selectedCard.isFoil || manualFoil;
+  const mainCount = getCountMain(selectedCard.id);
+  const collectionsContainingCard = collections.filter((c) =>
+    c.cards.some((x) => x.id === selectedCard.id),
+  );
 
   return (
     <div className="window-backdrop" onClick={onClose}>
@@ -152,7 +161,8 @@ const CardWindow: React.FC<CardWindowProps> = ({
             >
               {versions.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.set} - {v.rarity}
+                  {v.set} ({getSetYear(v)})
+                  {v.numberInSet ? ` #${v.numberInSet}` : ""} - {v.rarity}
                 </option>
               ))}
             </select>
@@ -162,12 +172,15 @@ const CardWindow: React.FC<CardWindowProps> = ({
               <input
                 type="checkbox"
                 checked={manualFoil}
-                onChange={(e) => setManualFoil(e.target.checked)}
+                onChange={(e) =>
+                  setManualFoilById((prev) => ({
+                    ...prev,
+                    [selectedCard.id]: e.target.checked,
+                  }))
+                }
               />
               Foil ✨
             </label>
-
-            <p>Foil: {finalFoil ? "Yes" : "No"}</p>
 
             {/* COLLECTION SELECT */}
             <select
@@ -175,10 +188,8 @@ const CardWindow: React.FC<CardWindowProps> = ({
               onChange={(e) => {
                 const id = e.target.value;
                 if (!id) return;
-
-                setSelectedCollections((prev) =>
-                  prev.includes(id) ? prev : [...prev, id],
-                );
+                if (collectionsContainingCard.some((c) => c.id === id)) return;
+                addCard({ ...selectedCard, isFoil: finalFoil }, id, userData);
               }}
             >
               <option value="">Add to collection</option>
@@ -190,48 +201,46 @@ const CardWindow: React.FC<CardWindowProps> = ({
             </select>
 
             {/* TAGS */}
-            <div>
-              {selectedCollections.map((id) => {
-                const col = collections.find((c) => c.id === id);
-                if (!col) return null;
-
-                return (
-                  <span key={id}>
-                    {col.name}
-                    <button
-                      onClick={() =>
-                        setSelectedCollections((prev) =>
-                          prev.filter((x) => x !== id),
-                        )
-                      }
-                    >
-                      x
-                    </button>
-                  </span>
-                );
-              })}
+            <div className="collection-tags">
+              {collectionsContainingCard.map((col) => (
+                <span key={col.id} className="collection-tag">
+                  {col.name}
+                  <button
+                    className="collection-tag-remove"
+                    onClick={() =>
+                      removeCard(selectedCard, col.id, userData)
+                    }
+                    aria-label={`Remove from ${col.name}`}
+                    title={`Remove from ${col.name}`}
+                  >
+                    x
+                  </button>
+                </span>
+              ))}
             </div>
 
-            {/* ACTIONS */}
-            <button
-              onClick={() => {
-                selectedCollections.forEach((id) => {
-                  addCard({ ...selectedCard, isFoil: finalFoil }, id, userData);
-                });
-              }}
-            >
-              Add to Collections
-            </button>
-
-            <button
-              onClick={() => addCard({ ...selectedCard, isFoil: finalFoil })}
-            >
-              Add to Main
-            </button>
-
-            <button onClick={() => removeCard(selectedCard)}>Remove</button>
-
-            <p>In main: {getCountMain(selectedCard.id)}</p>
+            {/* MAIN COUNT CONTROL */}
+            <div className="main-count-row">
+              <span className="main-count-label">In main:</span>
+              <span className="main-count-value">{mainCount}</span>
+              <button
+                className="main-count-btn main-count-plus"
+                onClick={() => addCard({ ...selectedCard, isFoil: finalFoil })}
+                aria-label="Add one to main"
+                title="Add one"
+              >
+                +
+              </button>
+              <button
+                className="main-count-btn main-count-minus"
+                onClick={() => removeCard(selectedCard)}
+                aria-label="Remove one from main"
+                title="Remove one"
+                disabled={mainCount === 0}
+              >
+                -
+              </button>
+            </div>
           </div>
         </div>
       </div>

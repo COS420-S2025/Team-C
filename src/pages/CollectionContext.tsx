@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import type { CardVersion } from "../types/card";
 import { db } from "..";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import type { User } from "../interfaces/User";
 
 export type Collection = {
@@ -15,7 +15,7 @@ type CollectionsContextType = {
   main: CardVersion[];
   collections: Collection[];
   addCard: (card: CardVersion, collectionId?: string, userData?: User) => void;
-  removeCard: (card: CardVersion, collectionId?: string) => void;
+  removeCard: (card: CardVersion, collectionId?: string, userData?: User) => void;
   createCollection: (name: string) => void;
 };
 
@@ -40,7 +40,9 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
     collectionId?: string,
     userData?: User,
   ) => {
-    setMain((prev: CardVersion[]) => [...prev, card]);
+    // If a collectionId is provided, treat this as "add to collection",
+    // not "add to main". Main additions are explicit (no collectionId).
+    if (!collectionId) setMain((prev: CardVersion[]) => [...prev, card]);
 
     if (collectionId && userData) {
       setCollections((prev: Collection[]) =>
