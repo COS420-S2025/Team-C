@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { CardVersion } from "../types/CardVersion";
 import { db } from "..";
 import { doc, setDoc } from "firebase/firestore";
@@ -11,6 +11,14 @@ export type Collection = {
   cover?: string;
 };
 
+export type TagColor = "red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet";
+
+export type CardTag = {
+  id: string;
+  name: string;
+  color: TagColor;
+};
+
 type CollectionsContextType = {
   main: CardVersion[];
   collections: Collection[];
@@ -21,6 +29,11 @@ type CollectionsContextType = {
     userData?: User,
   ) => void;
   createCollection: (name: string) => void;
+  tags: CardTag[];
+  cardTagsByCardId: Record<string, string[]>;
+  createTag: (name: string, color: TagColor) => string;
+  assignTagToCard: (cardId: string, tagId: string) => void;
+  removeTagFromCard: (cardId: string, tagId: string) => void;
 };
 
 const CollectionsContext: React.Context<CollectionsContextType | null> =
@@ -38,6 +51,41 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
 }) => {
   const [main, setMain] = useState<CardVersion[]>(initialMain);
   const [collections, setCollections] = useState<Collection[]>([]);
+
+  const [tags, setTags] = useState<CardTag[]>([]);
+  const [cardTagsByCardId, setCardTagsByCardId] = useState<
+    Record<string, string[]>
+  >({});
+
+  const storageKeys = useMemo(() => {
+    // Persist tags for anonymous users too, but separate from any signed-in account.
+    // If the user later signs in, we keep the anonymous data available under its key.
+    return {
+      tags: "tc_tags_v1",
+      assignments: "tc_tag_assignments_v1",
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const rawTags = localStorage.getItem(storageKeys.tags);
+      const rawAssignments = localStorage.getItem(storageKeys.assignments);
+      if (rawTags) setTags(JSON.parse(rawTags) as CardTag[]);
+      if (rawAssignments)
+        setCardTagsByCardId(JSON.parse(rawAssignments) as Record<string, string[]>);
+    } catch {
+      // ignore corrupt storage
+    }
+  }, [storageKeys]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKeys.tags, JSON.stringify(tags));
+      localStorage.setItem(storageKeys.assignments, JSON.stringify(cardTagsByCardId));
+    } catch {
+      // ignore quota / blocked storage
+    }
+  }, [tags, cardTagsByCardId, storageKeys]);
 
   const addCard = (
     card: CardVersion,
@@ -81,6 +129,9 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
             rarity: card.rarity,
             releaseDate: card.releaseDate,
             isFoil: card.isFoil,
+            types: card.types ?? [],
+            hp: card.hp ?? null,
+            setId: card.setId ?? null,
           },
         );
     }
@@ -137,9 +188,55 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
     ]);
   };
 
+  const createTag = (name: string, color: TagColor) => {
+    const trimmed = name.trim();
+    if (!trimmed) return "";
+
+    const existing = tags.find((t) => t.name.toLowerCase() === trimmed.toLowerCase());
+    if (existing) return existing.id;
+
+    const id = crypto.randomUUID();
+    setTags((prev) => [...prev, { id, name: trimmed, color }]);
+    return id;
+  };
+
+  const assignTagToCard = (cardId: string, tagId: string) => {
+    if (!cardId || !tagId) return;
+    setCardTagsByCardId((prev) => {
+      const current = prev[cardId] ?? [];
+      if (current.includes(tagId)) return prev;
+      return { ...prev, [cardId]: [...current, tagId] };
+    });
+  };
+
+  const removeTagFromCard = (cardId: string, tagId: string) => {
+    if (!cardId || !tagId) return;
+    setCardTagsByCardId((prev) => {
+      const current = prev[cardId] ?? [];
+      if (!current.includes(tagId)) return prev;
+      const next = current.filter((x) => x !== tagId);
+      if (next.length === 0) {
+        const { [cardId]: _removed, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [cardId]: next };
+    });
+  };
+
   return (
     <CollectionsContext.Provider
-      value={{ main, collections, addCard, removeCard, createCollection }}
+      value={{
+        main,
+        collections,
+        addCard,
+        removeCard,
+        createCollection,
+        tags,
+        cardTagsByCardId,
+        createTag,
+        assignTagToCard,
+        removeTagFromCard,
+      }}
     >
       {children}
     </CollectionsContext.Provider>

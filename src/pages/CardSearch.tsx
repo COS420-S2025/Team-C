@@ -17,6 +17,7 @@ export default function CardSearch({ userData }: CardSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchListItem[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const cache = useRef<Record<string, SearchListItem[]>>({});
 
@@ -25,20 +26,24 @@ export default function CardSearch({ userData }: CardSearchProps) {
 
     if (!q) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
     if (cache.current[q]) {
       setResults(cache.current[q]);
+      setLoading(false);
       return;
     }
 
     const timer = setTimeout(async () => {
       try {
+        setLoading(true);
         const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${q}`);
         const data: unknown = await res.json();
         if (!Array.isArray(data)) {
           setResults([]);
+          setLoading(false);
           return;
         }
 
@@ -56,9 +61,11 @@ export default function CardSearch({ userData }: CardSearchProps) {
 
         cache.current[q] = filtered;
         setResults(filtered);
+        setLoading(false);
       } catch (err) {
         console.error(err);
         setResults([]);
+        setLoading(false);
       }
     }, 300);
 
@@ -78,7 +85,7 @@ export default function CardSearch({ userData }: CardSearchProps) {
         {query && (
           <ul className="dropdown">
             {results.length === 0 ? (
-              <li className="dropdown-item">No results</li>
+              <li className="dropdown-item">{loading ? "Loading..." : "No results"}</li>
             ) : (
               results.map((card) => (
                 <li

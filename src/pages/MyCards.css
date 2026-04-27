@@ -69,3 +69,29 @@
 
   cursor: pointer;
 }
+
+.mycards-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.mycards-search {
+  padding: 10px;
+  font-size: 16px;
+  width: 320px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: black;
+}
+
+.mycards-controls select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: black;
+  background-color: white;
+}

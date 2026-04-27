@@ -18,9 +18,11 @@ type TcgdexFullCard = {
   // - base path string (used like `${image}/high.png`)
   // - object with `high`/`low` URLs
   image?: { high?: string; low?: string } | string;
-  set?: TcgdexSetInfo;
+  set?: TcgdexSetInfo & { id?: string };
   rarity?: string;
   variant?: string;
+  types?: string[];
+  hp?: number | string;
 };
 
 function toCardVersion(c: TcgdexFullCard): CardVersion {
@@ -28,15 +30,24 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
     typeof c.image === "string"
       ? `${c.image}/high.png`
       : (c.image?.high ?? c.image?.low ?? "");
+  const hp =
+    typeof c.hp === "number"
+      ? c.hp
+      : typeof c.hp === "string"
+        ? Number.parseInt(c.hp, 10)
+        : undefined;
   return {
     id: c.id,
     name: c.name,
     imageUrl,
     set: c.set?.name ?? "Unknown Set",
+    setId: c.set?.id,
     rarity: c.rarity ?? "Unknown Rarity",
     releaseDate: c.set?.releaseDate ?? "",
     numberInSet: c.localId ?? "",
     isFoil: c.variant === "holo" || c.variant === "reverse",
+    types: Array.isArray(c.types) ? c.types : undefined,
+    hp: Number.isFinite(hp) ? hp : undefined,
   };
 }
 
@@ -51,7 +62,17 @@ const CardWindow: React.FC<CardWindowProps> = ({
   onClose,
   userData,
 }) => {
-  const { main, addCard, removeCard, collections } = useCollections();
+  const {
+    main,
+    addCard,
+    removeCard,
+    collections,
+    tags,
+    cardTagsByCardId,
+    createTag,
+    assignTagToCard,
+    removeTagFromCard,
+  } = useCollections();
 
   const [versions, setVersions] = useState<CardVersion[]>([]);
   const [selectedCard, setSelectedCard] = useState<CardVersion | null>(null);
@@ -60,6 +81,14 @@ const CardWindow: React.FC<CardWindowProps> = ({
     {},
   );
   const [loading, setLoading] = useState(true);
+
+  const [tagSelectValue, setTagSelectValue] = useState("");
+  const [creatingTag, setCreatingTag] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] =
+    useState<"red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet">(
+      "red",
+    );
 
   const getCountMain = (id: string) => main.filter((c) => c.id === id).length;
   const getReleaseMs = (v: CardVersion) =>
@@ -72,6 +101,9 @@ const CardWindow: React.FC<CardWindowProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setCreatingTag(false);
+      setNewTagName("");
+      setTagSelectValue("");
 
       try {
         const res = await fetch(
@@ -135,6 +167,11 @@ const CardWindow: React.FC<CardWindowProps> = ({
   const collectionsContainingCard = collections.filter((c) =>
     c.cards.some((x) => x.id === selectedCard.id),
   );
+  const assignedTagIds = cardTagsByCardId[selectedCard.id] ?? [];
+  const assignedTags = assignedTagIds
+    .map((id) => tags.find((t) => t.id === id))
+    .filter(Boolean) as typeof tags;
+  const availableTags = tags.filter((t) => !assignedTagIds.includes(t.id));
 
   return (
     <div className="window-backdrop" onClick={onClose}>
@@ -145,7 +182,19 @@ const CardWindow: React.FC<CardWindowProps> = ({
 
         <div className="window-grid">
           <div className="left-panel">
-            <img src={selectedCard.imageUrl} alt={selectedCard.name} />
+            <img
+              src={selectedCard.imageUrl}
+              alt={selectedCard.name}
+              loading="eager"
+              decoding="async"
+              onError={(e) => {
+                const img = e.currentTarget;
+                // If high-res fails, try low-res before giving up.
+                if (img.src.endsWith("/high.png")) {
+                  img.src = img.src.replace("/high.png", "/low.png");
+                }
+              }}
+            />
           </div>
 
           <div className="right-panel">
@@ -216,6 +265,106 @@ const CardWindow: React.FC<CardWindowProps> = ({
                 </span>
               ))}
             </div>
+
+            {/* CUSTOM TAGS */}
+            <select
+              value={tagSelectValue}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTagSelectValue(val);
+                if (!val) return;
+                if (val === "__new__") {
+                  setCreatingTag(true);
+                  return;
+                }
+                assignTagToCard(selectedCard.id, val);
+                setTagSelectValue("");
+              }}
+            >
+              <option value="">Add tag</option>
+              {availableTags.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+              <option value="__new__">New tag…</option>
+            </select>
+
+            {creatingTag && (
+              <div className="tag-create-row">
+                <input
+                  className="tag-name-input"
+                  value={newTagName}
+                  onChange={(e) => setNewTagName(e.target.value)}
+                  placeholder="Tag name"
+                />
+                <select
+                  value={newTagColor}
+                  onChange={(e) =>
+                    setNewTagColor(
+                      e.target.value as
+                        | "red"
+                        | "orange"
+                        | "yellow"
+                        | "green"
+                        | "blue"
+                        | "indigo"
+                        | "violet",
+                    )
+                  }
+                >
+                  <option value="red">Red</option>
+                  <option value="orange">Orange</option>
+                  <option value="yellow">Yellow</option>
+                  <option value="green">Green</option>
+                  <option value="blue">Blue</option>
+                  <option value="indigo">Indigo</option>
+                  <option value="violet">Violet</option>
+                </select>
+                <button
+                  onClick={() => {
+                    const id = createTag(newTagName, newTagColor);
+                    if (id) assignTagToCard(selectedCard.id, id);
+                    setNewTagName("");
+                    setCreatingTag(false);
+                    setTagSelectValue("");
+                  }}
+                  disabled={!newTagName.trim()}
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setCreatingTag(false);
+                    setNewTagName("");
+                    setTagSelectValue("");
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            {assignedTags.length > 0 && (
+              <div className="custom-tags">
+                {assignedTags.map((t) => (
+                  <span
+                    key={t.id}
+                    className={`custom-tag-pill custom-tag-${t.color}`}
+                  >
+                    {t.name}
+                    <button
+                      className="collection-tag-remove"
+                      onClick={() => removeTagFromCard(selectedCard.id, t.id)}
+                      aria-label={`Remove tag ${t.name}`}
+                      title={`Remove tag ${t.name}`}
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* MAIN COUNT CONTROL */}
             <div className="main-count-row">
