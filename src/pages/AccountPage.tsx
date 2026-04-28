@@ -80,7 +80,7 @@ const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
               <input
                 type="text"
                 value={newName}
-                className="w-full text-black py-2 mb-4 bg-transparent border-b border-black-500 focus:outline-none focus:border-black"
+                className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
                 placeholder="New Name"
                 onChange={(e) => setNewName(e.target.value)}
               />
@@ -96,7 +96,7 @@ const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
               <input
                 type="email"
                 value={newEmail}
-                className="w-full text-black py-2 mb-4 bg-transparent border-b border-black-500 focus:outline-none focus:border-black"
+                className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
                 placeholder="New Email"
                 onChange={(e) => setNewEmail(e.target.value)}
               />
