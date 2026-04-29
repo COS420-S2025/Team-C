@@ -32,11 +32,7 @@ export default function Navbar(): React.JSX.Element {
       <div className="w-screen flex justify-center items-center fixed top-0">
         <nav className="h-1/10 w-full flex justify-center items-center py-[10px] px-[20px] rounded-[10px] bg-[#b9cfd4] shadow-2xl">
           <ul className="w-full list-none list-image-none flex justify-center items-center">
-            <Link
-              to="/home"
-              className="app-navbar-item app-navbar-home-link"
-              aria-label="Home"
-            >
+            <Link to="/home" className="app-navbar-home-link" aria-label="Home">
               <img
                 src="/DieCard-Bruce-Willis-Logo.png"
                 alt=""

@@ -53,3 +53,17 @@ Navbar formatting style acquired from:
   object-fit: fill;
   z-index: 11;
 }
+
+.app-navbar-home-link {
+  width: 100px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: border-color 400ms ease;
+}
+.app-navbar-home-link:hover {
+  border-color: #464747;
+}
