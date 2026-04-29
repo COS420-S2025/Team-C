@@ -1,3 +1,7 @@
+/**
+ * Note: This file was created/updated with assistance from AI tooling.
+ * The team reviewed and validated the final implementation.
+ */
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { CardVersion } from "../types/CardVersion";
 import { db } from "..";
@@ -132,6 +136,11 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
             types: card.types ?? [],
             hp: card.hp ?? null,
             setId: card.setId ?? null,
+            attackEnergyTypes: card.attackEnergyTypes ?? [],
+            minAttackEnergyCost: card.minAttackEnergyCost ?? null,
+            maxAttackEnergyCost: card.maxAttackEnergyCost ?? null,
+            attackEnergyCosts: card.attackEnergyCosts ?? [],
+            weaknessTypes: card.weaknessTypes ?? [],
           },
         );
     }

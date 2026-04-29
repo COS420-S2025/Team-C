@@ -10,23 +10,24 @@
 .card {
   position: relative;
 
-  padding: 10px;
+  padding: 8px;
   width: 100%;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  border: 2px solid black;
-  border-radius: 10px;
+  border: none;
+  border-radius: 12px;
 
   background-color: transparent;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .card img {
   width: 100%;
-  max-width: 120px;
+  max-width: 240px;
   height: auto;
   display: block;
 }
@@ -55,19 +56,40 @@
   border-radius: 8px;
 }
 
-.remove-button {
+.card-stepper {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
 
-  font-size: 12px;
-  padding: 1px 1px;
-  color: black;
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-stepper-btn {
+  width: 26px;
+  height: 26px;
   border: none;
-  border-radius: 4px;
-  background-color: lightgray;
-
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
+  line-height: 1;
+}
+
+.card-stepper-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.card-stepper-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .mycards-controls {
@@ -83,6 +105,15 @@
   padding: 10px;
   font-size: 16px;
   width: 320px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: black;
+}
+
+.mycards-energy-cost {
+  padding: 10px;
+  font-size: 16px;
+  width: 180px;
   border-radius: 5px;
   border: 1px solid #ccc;
   color: black;

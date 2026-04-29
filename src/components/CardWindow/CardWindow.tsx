@@ -1,3 +1,7 @@
+/**
+ * Note: This file was created/updated with assistance from AI tooling.
+ * The team reviewed and validated the final implementation.
+ */
 import React, { useEffect, useState } from "react";
 import "./CardWindow.css";
 import { useCollections, type Collection } from "../../pages/CollectionContext";
@@ -23,6 +27,8 @@ type TcgdexFullCard = {
   variant?: string;
   types?: string[];
   hp?: number | string;
+  attacks?: Array<{ cost?: string[] | null }>;
+  weaknesses?: Array<{ type?: string | null }>;
 };
 
 function toCardVersion(c: TcgdexFullCard): CardVersion {
@@ -36,6 +42,23 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
       : typeof c.hp === "string"
         ? Number.parseInt(c.hp, 10)
         : undefined;
+
+  const allAttackCosts = (c.attacks ?? [])
+    .map((a) => (Array.isArray(a?.cost) ? a.cost.filter(Boolean) : []))
+    .filter((x) => x.length > 0);
+  const costTotals = allAttackCosts.map((cost) => cost.length);
+  const attackEnergyCosts = Array.from(new Set(costTotals)).sort((a, b) => a - b);
+  const attackEnergyTypes = Array.from(
+    new Set(allAttackCosts.flat().filter((x): x is string => typeof x === "string" && !!x)),
+  );
+  const weaknessTypes = Array.from(
+    new Set(
+      (c.weaknesses ?? [])
+        .map((w) => w?.type)
+        .filter((x): x is string => typeof x === "string" && !!x),
+    ),
+  );
+
   return {
     id: c.id,
     name: c.name,
@@ -48,17 +71,24 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
     isFoil: c.variant === "holo" || c.variant === "reverse",
     types: Array.isArray(c.types) ? c.types : undefined,
     hp: Number.isFinite(hp) ? hp : undefined,
+    attackEnergyTypes: attackEnergyTypes.length ? attackEnergyTypes : undefined,
+    minAttackEnergyCost: costTotals.length ? Math.min(...costTotals) : undefined,
+    maxAttackEnergyCost: costTotals.length ? Math.max(...costTotals) : undefined,
+    attackEnergyCosts: attackEnergyCosts.length ? attackEnergyCosts : undefined,
+    weaknessTypes: weaknessTypes.length ? weaknessTypes : undefined,
   };
 }
 
 type CardWindowProps = {
   cardName: string;
+  cardId?: string;
   onClose: () => void;
   userData: User | undefined;
 };
 
 const CardWindow: React.FC<CardWindowProps> = ({
   cardName,
+  cardId,
   onClose,
   userData,
 }) => {
@@ -95,8 +125,8 @@ const CardWindow: React.FC<CardWindowProps> = ({
     v.releaseDate
       ? new Date(v.releaseDate).getTime()
       : Number.NEGATIVE_INFINITY;
-  const getSetYear = (v: CardVersion) =>
-    v.releaseDate ? String(new Date(v.releaseDate).getFullYear()) : "—";
+  const getSetYear = (v: CardVersion): string | null =>
+    v.releaseDate ? String(new Date(v.releaseDate).getFullYear()) : null;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,10 +161,19 @@ const CardWindow: React.FC<CardWindowProps> = ({
 
         const mapped: CardVersion[] = fullCards.map((c) => toCardVersion(c));
 
-        mapped.sort((a, b) => getReleaseMs(b) - getReleaseMs(a));
+        // Sort versions by release date (newest → oldest), then by set/name for stability.
+        mapped.sort((a, b) => {
+          const d = getReleaseMs(b) - getReleaseMs(a);
+          if (d !== 0) return d;
+          const s = (a.set ?? "").localeCompare(b.set ?? "");
+          if (s !== 0) return s;
+          return (a.numberInSet ?? "").localeCompare(b.numberInSet ?? "");
+        });
 
         setVersions(mapped);
-        setSelectedCard(mapped[0]);
+        const preferred =
+          (cardId ? mapped.find((m) => m.id === cardId) : undefined) ?? mapped[0];
+        setSelectedCard(preferred ?? null);
         setManualFoilById({});
       } catch (err) {
         console.error(err);
@@ -146,7 +185,7 @@ const CardWindow: React.FC<CardWindowProps> = ({
     };
 
     fetchData();
-  }, [cardName]);
+  }, [cardName, cardId]);
 
   if (loading) return <div className="window-backdrop">Loading...</div>;
 
@@ -210,7 +249,10 @@ const CardWindow: React.FC<CardWindowProps> = ({
             >
               {versions.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.set} ({getSetYear(v)})
+                  {(() => {
+                    const year = getSetYear(v);
+                    return `${v.set}${year ? ` (${year})` : ""}`;
+                  })()}
                   {v.numberInSet ? ` #${v.numberInSet}` : ""} - {v.rarity}
                 </option>
               ))}

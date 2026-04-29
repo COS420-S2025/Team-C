@@ -82,3 +82,9 @@
   height: auto;
   border-radius: 5px;
 }
+
+.type-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
