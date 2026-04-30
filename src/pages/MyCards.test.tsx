@@ -27,7 +27,7 @@ describe("MyCards", () => {
   test("displays a card when cards are in the main collection", () => {
     renderCollection([sampleCard]);
 
-    expect(screen.getByText("Gardevoir")).toBeInTheDocument();
+    expect(screen.getByAltText("Gardevoir")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Gardevoir" })).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe("MyCards", () => {
   test("removes card from the page when the remove button is clicked", () => {
     renderCollection([sampleCard]);
 
-    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+    fireEvent.click(screen.getByTitle("Remove one"));
 
     expect(screen.queryByText("Gardevoir")).not.toBeInTheDocument();
   });

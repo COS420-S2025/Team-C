@@ -47,9 +47,15 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
     .map((a) => (Array.isArray(a?.cost) ? a.cost.filter(Boolean) : []))
     .filter((x) => x.length > 0);
   const costTotals = allAttackCosts.map((cost) => cost.length);
-  const attackEnergyCosts = Array.from(new Set(costTotals)).sort((a, b) => a - b);
+  const attackEnergyCosts = Array.from(new Set(costTotals)).sort(
+    (a, b) => a - b,
+  );
   const attackEnergyTypes = Array.from(
-    new Set(allAttackCosts.flat().filter((x): x is string => typeof x === "string" && !!x)),
+    new Set(
+      allAttackCosts
+        .flat()
+        .filter((x): x is string => typeof x === "string" && !!x),
+    ),
   );
   const weaknessTypes = Array.from(
     new Set(
@@ -72,8 +78,12 @@ function toCardVersion(c: TcgdexFullCard): CardVersion {
     types: Array.isArray(c.types) ? c.types : undefined,
     hp: Number.isFinite(hp) ? hp : undefined,
     attackEnergyTypes: attackEnergyTypes.length ? attackEnergyTypes : undefined,
-    minAttackEnergyCost: costTotals.length ? Math.min(...costTotals) : undefined,
-    maxAttackEnergyCost: costTotals.length ? Math.max(...costTotals) : undefined,
+    minAttackEnergyCost: costTotals.length
+      ? Math.min(...costTotals)
+      : undefined,
+    maxAttackEnergyCost: costTotals.length
+      ? Math.max(...costTotals)
+      : undefined,
     attackEnergyCosts: attackEnergyCosts.length ? attackEnergyCosts : undefined,
     weaknessTypes: weaknessTypes.length ? weaknessTypes : undefined,
   };
@@ -115,10 +125,9 @@ const CardWindow: React.FC<CardWindowProps> = ({
   const [tagSelectValue, setTagSelectValue] = useState("");
   const [creatingTag, setCreatingTag] = useState(false);
   const [newTagName, setNewTagName] = useState("");
-  const [newTagColor, setNewTagColor] =
-    useState<"red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet">(
-      "red",
-    );
+  const [newTagColor, setNewTagColor] = useState<
+    "red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet"
+  >("red");
 
   const getCountMain = (id: string) => main.filter((c) => c.id === id).length;
   const getReleaseMs = (v: CardVersion) =>
@@ -172,7 +181,8 @@ const CardWindow: React.FC<CardWindowProps> = ({
 
         setVersions(mapped);
         const preferred =
-          (cardId ? mapped.find((m) => m.id === cardId) : undefined) ?? mapped[0];
+          (cardId ? mapped.find((m) => m.id === cardId) : undefined) ??
+          mapped[0];
         setSelectedCard(preferred ?? null);
         setManualFoilById({});
       } catch (err) {
