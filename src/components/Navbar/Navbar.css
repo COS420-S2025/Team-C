@@ -14,18 +14,18 @@ Navbar formatting style acquired from:
   user-select: none;
   cursor: pointer;
   margin: auto;
-  border: 2px solid #f2c75c;
+  border: 2px solid #b9cfd4;
   overflow: hidden;
   font-size: 16px;
   text-transform: uppercase;
-  color: #f2c75c;
+  color: #020202;
   z-index: 10;
   text-decoration: none;
   transition: color 200ms ease;
 }
 
 .app-navbar-item:hover {
-  color: #003b49;
+  color: #b9cfd4;
 }
 
 .app-navbar-item:before {
@@ -34,10 +34,36 @@ Navbar formatting style acquired from:
   width: 0%;
   height: 100%;
   transform: skew(30deg);
-  background: #f2c75c;
+  background: #464747;
   transition: width 400ms ease;
+  z-index: -1;
 }
 
 .app-navbar-item:hover:before {
   width: 120%;
+}
+
+.app-navbar-home-link {
+  padding: 0px;
+}
+
+.app-navbar-home-icon {
+  width: 100%;
+  height: 120%;
+  object-fit: fill;
+  z-index: 11;
+}
+
+.app-navbar-home-link {
+  width: 100px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: border-color 400ms ease;
+}
+.app-navbar-home-link:hover {
+  border-color: #464747;
 }
