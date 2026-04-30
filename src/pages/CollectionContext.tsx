@@ -2,10 +2,16 @@
  * Note: This file was created/updated with assistance from AI tooling.
  * The team reviewed and validated the final implementation.
  */
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { CardVersion } from "../types/CardVersion";
 import { db } from "..";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import type { User } from "../interfaces/User";
 
 export type Collection = {
@@ -15,7 +21,14 @@ export type Collection = {
   cover?: string;
 };
 
-export type TagColor = "red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet";
+export type TagColor =
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "blue"
+  | "indigo"
+  | "violet";
 
 export type CardTag = {
   id: string;
@@ -32,7 +45,7 @@ type CollectionsContextType = {
     collectionId?: string,
     userData?: User,
   ) => void;
-  createCollection: (name: string) => void;
+  createCollection: (name: string, userData?: User) => void;
   tags: CardTag[];
   cardTagsByCardId: Record<string, string[]>;
   createTag: (name: string, color: TagColor) => string;
@@ -76,7 +89,9 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
       const rawAssignments = localStorage.getItem(storageKeys.assignments);
       if (rawTags) setTags(JSON.parse(rawTags) as CardTag[]);
       if (rawAssignments)
-        setCardTagsByCardId(JSON.parse(rawAssignments) as Record<string, string[]>);
+        setCardTagsByCardId(
+          JSON.parse(rawAssignments) as Record<string, string[]>,
+        );
     } catch {
       // ignore corrupt storage
     }
@@ -85,7 +100,10 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
   useEffect(() => {
     try {
       localStorage.setItem(storageKeys.tags, JSON.stringify(tags));
-      localStorage.setItem(storageKeys.assignments, JSON.stringify(cardTagsByCardId));
+      localStorage.setItem(
+        storageKeys.assignments,
+        JSON.stringify(cardTagsByCardId),
+      );
     } catch {
       // ignore quota / blocked storage
     }
@@ -115,34 +133,26 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
       );
 
       thisCol &&
-        setDoc(
-          doc(
-            db,
-            "users",
-            userData.uid,
-            "collections",
-            thisCol.name,
-            "cards",
-            card.id,
-          ),
-          {
+        updateDoc(doc(db, "users", userData.uid, "collections", thisCol.name), {
+          [`cards.${card.id}`]: {
             id: card.id,
             name: card.name,
-            imageURL: card.imageUrl,
+            imageUrl: card.imageUrl,
             set: card.set,
+            setId: card.setId,
             rarity: card.rarity,
             releaseDate: card.releaseDate,
+            numberInSet: card.numberInSet,
             isFoil: card.isFoil,
-            types: card.types ?? [],
-            hp: card.hp ?? null,
-            setId: card.setId ?? null,
+            types: card.types,
+            hp: card.hp,
             attackEnergyTypes: card.attackEnergyTypes ?? [],
             minAttackEnergyCost: card.minAttackEnergyCost ?? null,
             maxAttackEnergyCost: card.maxAttackEnergyCost ?? null,
             attackEnergyCosts: card.attackEnergyCosts ?? [],
             weaknessTypes: card.weaknessTypes ?? [],
           },
-        );
+        });
     }
   };
 
@@ -190,18 +200,28 @@ export const CollectionsProvider: React.FC<ProviderProps> = ({
     }
   };
 
-  const createCollection = (name: string) => {
-    setCollections((prev: Collection[]) => [
-      ...prev,
-      { id: crypto.randomUUID(), name, cards: [] },
-    ]);
+  const createCollection = (name: string, userData?: User) => {
+    if (userData) {
+      const randUUID = crypto.randomUUID();
+      setCollections((prev: Collection[]) => [
+        ...prev,
+        { id: randUUID, name, cards: [] },
+      ]);
+      setDoc(doc(db, "users", userData.uid, "collections", name), {
+        id: randUUID,
+        name: name,
+        cards: [],
+      });
+    }
   };
 
   const createTag = (name: string, color: TagColor) => {
     const trimmed = name.trim();
     if (!trimmed) return "";
 
-    const existing = tags.find((t) => t.name.toLowerCase() === trimmed.toLowerCase());
+    const existing = tags.find(
+      (t) => t.name.toLowerCase() === trimmed.toLowerCase(),
+    );
     if (existing) return existing.id;
 
     const id = crypto.randomUUID();

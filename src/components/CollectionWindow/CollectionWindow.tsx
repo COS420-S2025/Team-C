@@ -37,7 +37,7 @@ export const CollectionWindow: React.FC<CollectionWindowProps> = ({
           doc(db, "users", userData.uid, "collections", newCollectionName),
           {},
         );
-        createCollection(newCollectionName);
+        createCollection(newCollectionName, userData);
         setMessage(`Collection '${newCollectionName}' created!`);
         setError("");
         setNewCollectionName("");

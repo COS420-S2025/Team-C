@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
 import AccountPage from "../../pages/AccountPage";
-import Collection from "../../pages/CardCollection";
+import CollectionPage from "../../pages/CardCollection";
 import CardSearch from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
@@ -51,7 +51,7 @@ export default function Navbar(): React.JSX.Element {
 
         <Route
           path="/collection"
-          element={<Collection userData={userData} />}
+          element={<CollectionPage userData={userData} />}
         />
 
         <Route path="/search" element={<CardSearch userData={userData} />} />
