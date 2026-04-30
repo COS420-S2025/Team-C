@@ -1,125 +1,219 @@
-/* ==========================
-   BACKDROP
-   ========================== */
 .window-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.6);
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.6);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 200;
+
+  z-index: 999;
 }
 
-/* ==========================
-   WINDOW CONTENT
-   ========================== */
 .window-content {
+  width: 750px;
+  max-width: 90vw;
+  max-height: 85vh;
+
   background: white;
+  border-radius: 12px;
+  color: #111;
+
   padding: 20px;
-  border-radius: 8px;
-  max-width: 800px;
-  width: 90%;
+
+  position: relative;
+
   display: flex;
   flex-direction: column;
-  position: relative;
-  color: black; /* All text in black */
+
+  overflow-y: auto;
 }
 
-/* ==========================
-   CLOSE BUTTON
-   ========================== */
 .window-close {
   position: absolute;
   top: 10px;
   right: 10px;
+
+  background: black;
+  color: white;
+
   border: none;
-  background: transparent;
-  font-size: 18px;
+  padding: 6px 10px;
   cursor: pointer;
 }
 
-/* ==========================
-   WINDOW GRID (image + info)
-   ========================== */
 .window-grid {
   display: flex;
-  flex-direction: row;
   gap: 20px;
+  align-items: flex-start;
 }
 
-/* ==========================
-   LEFT PANEL (image)
-   ========================== */
+/* LEFT SIDE IMAGE FIX */
+.left-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .left-panel img {
-  max-width: 300px;
+  width: 220px;
   height: auto;
   border-radius: 10px;
 }
 
-/* ==========================
-   RIGHT PANEL (info + controls)
-   ========================== */
-.right-panel h2 {
-  margin: 0;
-  color: black;
+/* RIGHT SIDE */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.right-panel label {
-  font-weight: bold;
-  color: black;
+.window-content select,
+.window-content option,
+.window-content label,
+.window-content p,
+.window-content h2,
+.window-content span {
+  color: #111;
 }
 
-.right-panel select {
-  width: 100%;
-  margin: 5px 0 10px 0;
-  padding: 5px;
+.window-content select {
+  padding: 6px;
 }
 
-/* ==========================
-   SET NAME / RARITY TEXT
-   ========================== */
-.set-name, .rarity {
-  color: black;
-  margin: 2px 0;
+.tag-create-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-/* ==========================
-   QUANTITY STEPPER
-   ========================== */
-.quantity-stepper {
+.tag-name-input {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #111;
+}
+
+.custom-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.custom-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.custom-tag-red {
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+.custom-tag-orange {
+  background: rgba(234, 88, 12, 0.12);
+  border-color: rgba(234, 88, 12, 0.35);
+}
+.custom-tag-yellow {
+  background: rgba(250, 204, 21, 0.18);
+  border-color: rgba(250, 204, 21, 0.45);
+}
+.custom-tag-green {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(22, 163, 74, 0.35);
+}
+.custom-tag-blue {
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+.custom-tag-indigo {
+  background: rgba(79, 70, 229, 0.12);
+  border-color: rgba(79, 70, 229, 0.35);
+}
+.custom-tag-violet {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+}
+
+.window-content button {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.collection-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.collection-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background: #f7f7f7;
+}
+
+.collection-tag-remove {
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.main-count-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 4px;
 }
 
-.count {
-  min-width: 30px;
+.main-count-label {
+  font-weight: 600;
+}
+
+.main-count-value {
+  min-width: 24px;
   text-align: center;
+  font-weight: 700;
+}
+
+.main-count-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  color: white;
   font-size: 18px;
+  font-weight: 800;
 }
 
-.minus {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 5px;
+.main-count-plus {
+  background: #16a34a;
 }
 
-.plus {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 5px;
+.main-count-minus {
+  background: #dc2626;
 }
 
-.minus:hover { background-color: #cc0000; }
-.plus:hover { background-color: #3e8e41; }
+.main-count-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
