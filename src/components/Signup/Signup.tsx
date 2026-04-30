@@ -96,13 +96,13 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
   return (
     <div className="w-full h-screen flex">
       {/* Left side */}
-      <div className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center"></div>
+      <div className="w-1/2 h-full flex flex-col bg-[#e2e2e6] items-center justify-center"></div>
 
       {/* Right side */}
-      <div className="w-1/2 h-full flex flex-col bg-[#1a1a1a] p-20 justify-center">
+      <div className="w-1/2 h-full flex flex-col bg-[#b9cfd4] p-20 justify-center">
         <div className="w-full flex flex-col max-w-[450px] mx-auto">
           {/* Header */}
-          <div className="w-full flex flex-col mb-10 text-white">
+          <div className="w-full flex flex-col mb-10 text-black">
             <h3 className="text-4xl font-bold mb-2">Sign Up</h3>
             <p className="text-lg mb-4">
               Welcome! Please enter your information below.
@@ -114,21 +114,21 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
             <input
               type="email"
               placeholder="Email"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <input
               type="password"
               placeholder="Confirm Password"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
             />
@@ -142,7 +142,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
             <button
               onClick={signUpWithEmail}
               disabled={authing}
-              className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+              className="w-full bg-white border border-black text-black my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
             >
               Sign Up With Email and Password
             </button>
@@ -151,7 +151,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
           {/* Divider */}
           <div className="w-full flex items-center justify-center relative py-4">
             <div className="w-full h-[1px] bg-gray-500"></div>
-            <p className="text-lg absolute text-gray-500 bg-[#1a1a1a] px-2">
+            <p className="text-lg absolute text-black-500 bg-[#b9cfd4] px-2">
               OR
             </p>
           </div>
@@ -160,7 +160,7 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
           <button
             onClick={signUpWithGoogle}
             disabled={authing}
-            className="w-full bg-white text-black font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer mt-7"
+            className="w-full bg-white border border-black text-black font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer mt-7"
           >
             Sign Up With Google
           </button>
@@ -168,9 +168,9 @@ const Signup: React.FC<AccountPageDisplayProps> = ({
 
         {/* Login page */}
         <div className="w-full flex items-center justify-center mt-10">
-          <p className="text-sm font-normal text-gray-400">
+          <p className="text-sm font-normal text-black-400">
             Already have an account?{" "}
-            <span className="font-semibold text-white cursor-pointer underline">
+            <span className="font-semibold text-black cursor-pointer underline">
               <button
                 className="underline"
                 onClick={() => setShowSignup(false)}

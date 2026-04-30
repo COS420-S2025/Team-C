@@ -63,13 +63,13 @@ const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
     return (
       <div className="w-full h-screen flex">
         {/* Left side */}
-        <div className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center"></div>
+        <div className="w-1/2 h-full flex flex-col bg-[#e2e2e6] items-center justify-center"></div>
 
         {/* Right side */}
-        <div className="w-1/2 h-full flex flex-col bg-[#1a1a1a] p-20 justify-center">
+        <div className="w-1/2 h-full flex flex-col bg-[#b9cfd4] p-20 justify-center">
           <div className="w-full flex flex-col max-w-[450px] mx-auto">
             {/* Header */}
-            <div className="w-full flex flex-col mb-10 text-white">
+            <div className="w-full flex flex-col mb-10 text-black">
               <h3 className="text-3xl font-bold mb-2">
                 Signed in as: {userData.name}
               </h3>
@@ -80,12 +80,12 @@ const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
               <input
                 type="text"
                 value={newName}
-                className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+                className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
                 placeholder="New Name"
                 onChange={(e) => setNewName(e.target.value)}
               />
               <button
-                className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+                className="w-full bg-transparent border border-black text-black my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
                 onClick={handleNameUpdate}
               >
                 Change Name
@@ -96,12 +96,12 @@ const AccountPage: React.FC<AccountProps> = ({ userData, setUserData }) => {
               <input
                 type="email"
                 value={newEmail}
-                className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+                className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
                 placeholder="New Email"
                 onChange={(e) => setNewEmail(e.target.value)}
               />
               <button
-                className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+                className="w-full bg-transparent border border-black text-black my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
                 onClick={handleEmailUpdate}
               >
                 Change Email
