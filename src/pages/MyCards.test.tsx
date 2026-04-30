@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
-import CardCollection from "./CardCollection";
 import { CollectionsProvider } from "./CollectionContext";
 import type { CardVersion } from "../types/CardVersion";
+import MyCards from "./MyCards";
 
 const sampleCard: CardVersion = {
   id: "xy7-54",
@@ -12,17 +12,18 @@ const sampleCard: CardVersion = {
   rarity: "Rare",
   releaseDate: "2016-02-12",
   isFoil: false,
+  numberInSet: "54",
 };
 
 function renderCollection(initialMain: CardVersion[] = []) {
   return render(
     <CollectionsProvider initialMain={initialMain}>
-      <CardCollection userData={null} />
+      <MyCards userData={undefined} />
     </CollectionsProvider>,
   );
 }
 
-describe("CardCollection", () => {
+describe("MyCards", () => {
   test("displays a card when cards are in the main collection", () => {
     renderCollection([sampleCard]);
 
