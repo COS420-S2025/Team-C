@@ -39,8 +39,8 @@ test('clicking "x" hides closes Popup', () => {
   fireEvent.click(screen.getByText("x"));
   expect(screen.queryByText("Mock Create Collection Popup")).toBeNull();
 });
-
-test("shows sign-in message and hides collection controls when userData is undefined", () => {
+//Test to check if the page is displaying properly when the user is not signed in
+test("User cannot create collection if not signed in", () => {
   render(<CollectionPage userData={undefined} />);
   expect(
     screen.getByText("Sign in to access Collections!"),
