@@ -39,3 +39,12 @@ test('clicking "x" hides closes Popup', () => {
   fireEvent.click(screen.getByText("x"));
   expect(screen.queryByText("Mock Create Collection Popup")).toBeNull();
 });
+
+test("shows sign-in message and hides collection controls when userData is undefined", () => {
+  render(<CollectionPage userData={undefined} />);
+  expect(
+    screen.getByText("Sign in to access Collections!"),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("Create New Collection")).toBeNull();
+  expect(screen.queryByText("Feature in Development!")).toBeNull();
+});
