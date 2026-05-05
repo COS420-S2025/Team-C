@@ -1,132 +1,51 @@
 /* ==========================
-   Reset html & body
-   ========================== */
-/* Make the html and body take full height and remove default spacing */
-html, body {
-  height: 100%;       /* Ensures full viewport height */
-  margin: 0;          /* Remove default margin */
-  padding: 0;         /* Remove default padding */
-}
-
-/* ==========================
    Main container
    ========================== */
 .app-page {
-  display: flex;              /* Use flexbox for layout */
-  flex-direction: column;     /* Stack children vertically */
-  justify-content: center;    /* Center children vertically in viewport */
-  align-items: center;        /* Center children horizontally */
-  height: 100vh;              /* Full viewport height */
-  width: 100vw;               /* Full viewport width */
-  box-sizing: border-box;     /* Include padding/border in element size */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 /* ==========================
    Heading styling
    ========================== */
 .app-page h1 {
-  margin-bottom: 20px;        /* Space below the heading */
-  text-align: center;         /* Center the text horizontally */
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 /* ==========================
    Input styling
    ========================== */
-
 .input-container {
-  position: relative;  /* Dropdown will be positioned relative to this */
-  width: 500px;        /* Match the width of search input */
+  position: relative;
+  width: 500px;
 }
 
 .search-input {
-  padding: 10px;              /* Inner spacing inside input */
-  font-size: 16px;            /* Text size */
-  width: 500px;               /* Fixed width for search input */
-  margin-bottom: 10px;        /* Space below input */
-  border-radius: 5px;         /* Rounded corners */
-  border: 1px solid #ccc;     /* Light grey border */
-}
-
-/* ==========================
-   Button styling
-   ========================== */
-.add-button {
-  padding: 10px 20px;         /* Space inside button */
-  font-size: 16px;            /* Button text size */
-  border-radius: 5px;         /* Rounded corners */
-  border: none;               /* Remove default border */
-  background-color: #4caf50;  /* Green background */
-  color: black;               /* Black text */
-  cursor: pointer;            /* Pointer cursor on hover */
-}
-
-/* Button hover effect */
-.add-button:hover {
-  background-color: #45a049;  /* Darker green on hover */
-}
-
-/* ==========================
-   Card list container
-   ========================== */
-.card-list {
-  margin-top: 20px;           /* Space above the card list */
-  display: flex;              /* Use flexbox */
-  flex-wrap: wrap;            /* Allow cards to wrap to next row */
-  justify-content: center;    /* Center cards horizontally */
-  gap: 10px;                  /* Space between cards */
-}
-
-/* ==========================
-   Individual card styling
-   ========================== */
-.card-item {
-  padding: 10px 15px;         /* Space inside each card */
-  border: 1px solid #ccc;     /* Light grey border */
-  border-radius: 5px;         /* Rounded corners */
-  background-color: #f2f2f2;  /* Light grey background */
-  min-width: 100px;           /* Minimum width of a card */
-  text-align: center;         /* Center content inside card */
+  padding: 10px;
+  font-size: 16px;
+  width: 500px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: black;
 }
 
 /* ==========================
    Dropdown menu styling
    ========================== */
 .dropdown {
-  position: absolute;         /* Position relative to nearest positioned parent */                /* Offset from the top of the parent container */
-  width: 500px;               /* Match the width of the search input */
-  max-height: 300px;          /* Limit height for scrolling */
-  overflow-y: auto;           /* Add vertical scroll if content exceeds max height */
-  border: 1px solid #ccc;     /* Light grey border */
-  border-radius: 5px;         /* Rounded corners */
-  background-color: white;    /* White background */
-  z-index: 100;               /* Sit above other elements */
-  padding: 0;                 /* Remove default list padding */
-  margin: 0;                  /* Remove default list margin */
-  list-style: none;           /* Remove bullets */
-}
-
-/* ==========================
-   Dropdown list items
-   ========================== */
-.dropdown li {
-  padding: 8px 12px;          /* Space inside each list item */
-  cursor: pointer;            /* Pointer cursor to indicate clickable */
-  border-bottom: 1px solid #eee; /* Light separator between items */
-  color:gray                    /* gray text */
-}
-
-/* Highlight item on hover */
-.dropdown li:hover {
-  background-color: #f0f0f0;  /* Slight grey background on hover */
-}
-
-/* Dropdown menu */
-.dropdown {
-  position: absolute;   /* Positioned relative to input-container */
-  top: 100%;            /* Directly below input */
+  position: absolute;
+  top: 100%;
   left: 0;
-  width: 100%;          /* Match input width */
-  max-height: 300px;    /* Scroll if too tall */
+  width: 100%;
+  max-height: 300px;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -135,6 +54,19 @@ html, body {
   padding: 0;
   margin: 0;
   list-style: none;
+  color: black;
+}
+
+.dropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  color: black;
+}
+
+.dropdown li:hover,
+.dropdown-item:hover {
+  background-color: #f0f0f0;
 }
 
 .dropdown-item {
@@ -145,23 +77,14 @@ html, body {
   cursor: pointer;
 }
 
-.dropdown-item:hover {
-  background: #eee;
-}
-
 .thumb {
   width: 40px;
   height: auto;
   border-radius: 5px;
 }
 
-.types {
-  margin-left: auto;
-  display: flex;
-  gap: 5px;
-}
-
 .type-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
 }

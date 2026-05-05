@@ -1,39 +1,32 @@
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router";
 import "./Navbar.css";
 import AccountPage from "../../pages/AccountPage";
-import Collection from "../../pages/CardCollection";
-import Search from "../../pages/CardSearch";
+import CollectionPage from "../../pages/CardCollection";
+import CardSearch from "../../pages/CardSearch";
 import Home from "../../pages/home";
 import { useState } from "react";
 import type { User } from "../../interfaces/User";
+import MyCards from "../../pages/MyCards";
 
 export type AccountProps = {
-  setUserData: (userData: User | null) => void;
-  userData: User | null;
+  setUserData: (userData: User | undefined) => void;
+  userData: User | undefined;
 };
 
 export default function Navbar(): React.JSX.Element {
-  // Stores all cards in the collection
-  const [cards, setCards] = useState<any[]>([]);
-  const [userData, setUserData] = useState<User | null>(null);
-
-  // Adds a card
-  const addCard = (card: any) => {
-    setCards([...cards, card]);
-  };
-
-  // Removes a card
-  const removeCard = (cardToRemove: any) => {
-    setCards(cards.filter((card) => card.id !== cardToRemove.id));
-  };
+  const [userData, setUserData] = useState<User | undefined>(undefined);
 
   return (
     <Router>
       <div className="w-screen flex justify-center items-center fixed top-0">
-        <nav className="h-1/10 w-full flex justify-center items-center py-[10px] px-[20px] rounded-[10px] bg-[#003b49] shadow-2xl">
+        <nav className="h-1/10 w-full flex justify-center items-center py-[10px] px-[20px] rounded-[10px] bg-[#b9cfd4] shadow-2xl">
           <ul className="w-full list-none list-image-none flex justify-center items-center">
-            <Link to="/home" className="app-navbar-item">
-              Home
+            <Link to="/home" className="app-navbar-home-link" aria-label="Home">
+              <img
+                src="/DieCard-Bruce-Willis-Logo.png"
+                alt=""
+                className="app-navbar-home-icon"
+              />
             </Link>
             <Link to="/search" className="app-navbar-item">
               Search
@@ -58,21 +51,10 @@ export default function Navbar(): React.JSX.Element {
 
         <Route
           path="/collection"
-          element={
-            <Collection
-              cards={cards}
-              removeCard={removeCard}
-              addCard={addCard}
-            />
-          }
+          element={<CollectionPage userData={userData} />}
         />
 
-        <Route
-          path="/search"
-          element={
-            <Search cards={cards} removeCard={removeCard} addCard={addCard} />
-          }
-        />
+        <Route path="/search" element={<CardSearch userData={userData} />} />
 
         <Route
           path="/account"
@@ -81,7 +63,7 @@ export default function Navbar(): React.JSX.Element {
           }
         />
 
-        <Route path="/all" element={<Home />} />
+        <Route path="/all" element={<MyCards userData={userData} />} />
       </Routes>
     </Router>
   );

@@ -5,7 +5,7 @@ describe("Signup Tests", () => {
   test("Signup component renders without crashing app", () => {
     render(
       <Signup
-        AccountProps={{ userData: null, setUserData: jest.fn() }}
+        AccountProps={{ userData: undefined, setUserData: jest.fn() }}
         setShowSignup={jest.fn()}
       />,
     );

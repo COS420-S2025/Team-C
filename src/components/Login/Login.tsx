@@ -1,7 +1,17 @@
 import { useState } from "react";
-import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  type UserCredential,
+} from "firebase/auth";
 import { auth, db, googleAuthProvider } from "../..";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  DocumentReference,
+  DocumentSnapshot,
+  getDoc,
+  type DocumentData,
+} from "firebase/firestore";
 import type { AccountPageDisplayProps } from "../../pages/AccountPage";
 
 const Login: React.FC<AccountPageDisplayProps> = ({
@@ -19,10 +29,15 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
     // use firebase to sign in
     signInWithPopup(auth, googleAuthProvider)
-      .then(async (response) => {
-        const userRef = doc(db, "users", response.user.uid);
-        const userDoc = await getDoc(userRef);
-        const userData = userDoc.data();
+      .then(async (response: UserCredential) => {
+        const userRef: DocumentReference<DocumentData, DocumentData> = doc(
+          db,
+          "users",
+          response.user.uid,
+        );
+        const userDoc: DocumentSnapshot<DocumentData, DocumentData> =
+          await getDoc(userRef);
+        const userData: DocumentData | undefined = userDoc.data();
 
         if (!userData) {
           throw new Error("Account not found!");
@@ -47,10 +62,15 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
     // use firebase to sign in
     signInWithEmailAndPassword(auth, email, password)
-      .then(async (response) => {
-        const userRef = doc(db, "users", response.user.uid);
-        const userDoc = await getDoc(userRef);
-        const userData = userDoc.data();
+      .then(async (response: UserCredential) => {
+        const userRef: DocumentReference<DocumentData, DocumentData> = doc(
+          db,
+          "users",
+          response.user.uid,
+        );
+        const userDoc: DocumentSnapshot<DocumentData, DocumentData> =
+          await getDoc(userRef);
+        const userData: DocumentData | undefined = userDoc.data();
 
         if (!userData) {
           throw new Error("Account not found!");
@@ -72,13 +92,13 @@ const Login: React.FC<AccountPageDisplayProps> = ({
   return (
     <div className="w-full h-screen flex">
       {/* Left side */}
-      <div className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center"></div>
+      <div className="w-1/2 h-full flex flex-col bg-[#e2e2e6] items-center justify-center"></div>
 
       {/* Right side */}
-      <div className="w-1/2 h-full flex flex-col bg-[#1a1a1a] p-20 justify-center">
+      <div className="w-1/2 h-full flex flex-col bg-[#b9cfd4] p-20 justify-center">
         <div className="w-full flex flex-col max-w-[450px] mx-auto">
           {/* Header */}
-          <div className="w-full flex flex-col mb-10 text-white">
+          <div className="w-full flex flex-col mb-10 text-black">
             <h3 className="text-4xl font-bold mb-2">Login</h3>
             <p className="text-lg mb-4">
               Welcome back! Please enter your credentials.
@@ -90,14 +110,14 @@ const Login: React.FC<AccountPageDisplayProps> = ({
             <input
               type="email"
               placeholder="Email"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
-              className="w-full text-white py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-white"
+              className="w-full text-black py-2 mb-4 bg-transparent border-b border-gray-500 focus:outline-none focus:border-black"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -106,7 +126,7 @@ const Login: React.FC<AccountPageDisplayProps> = ({
           {/* Login button (Email & Password) */}
           <div className="w-full flex flex-col mb-4">
             <button
-              className="w-full bg-transparent border border-white text-white my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
+              className="w-full bg-white border border-black text-black my-2 font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer"
               onClick={signInWithEmail}
               disabled={authing}
             >
@@ -120,14 +140,12 @@ const Login: React.FC<AccountPageDisplayProps> = ({
           {/* Sign-in option divider */}
           <div className="w-full flex items-center justify-center relative py-4">
             <div className="w-full h-[1px] bg-gray-500"></div>
-            <p className="text-lg absolute text-gray-500 bg-[#1a1a1a] px-2">
-              OR
-            </p>
+            <p className="text-lg absolute text-black bg-[#b9cfd4] px-2">OR</p>
           </div>
 
           {/* Login button (Google) */}
           <button
-            className="w-full bg-white text-black font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer mt-7"
+            className="w-full bg-white border border-black text-black font-semibold rounded-md p-4 text-center flex items-center justify-center cursor-pointer mt-7"
             onClick={signInWithGoogle}
             disabled={authing}
           >
@@ -137,9 +155,9 @@ const Login: React.FC<AccountPageDisplayProps> = ({
 
         {/* Signup page */}
         <div className="w-full flex items-center justify-center mt-10">
-          <p className="text-sm font-normal text-gray-400">
+          <p className="text-sm font-normal text-black">
             Don't have an account?{" "}
-            <span className="font-semibold text-white cursor-pointer underline">
+            <span className="font-semibold text-black cursor-pointer underline">
               <button
                 className="underline"
                 onClick={() => setShowSignup(true)}

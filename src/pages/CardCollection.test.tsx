@@ -1,63 +1,50 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
-import CardCollection from "./CardCollection";
+import CollectionPage from "./CardCollection";
+import type { User } from "../interfaces/User";
 
-/*Test to check if a card is displayed when card details are provided properly */
-describe("CardCollection", () => {
-  test("displays a card when cards are provided", () => {
-    const cards = [
-      {
-        id: "xy7-54",
-        name: "Gardevoir",
-        imageUrl: "https://example.com/gardevoir.png",
-        set: "Steam Siege",
-        rarity: "Rare",
-      },
-    ];
+jest.mock("../components/CollectionWindow/CollectionWindow", () => ({
+  CollectionWindow: ({ onClose }: { onClose: () => void }) => (
+    <div>
+      <p>Mock Create Collection Popup</p>
+      <button onClick={onClose}>x</button>
+    </div>
+  ),
+}));
 
-    render(
-      <CardCollection
-        addCard={jest.fn()}
-        cards={cards}
-        removeCard={jest.fn()}
-      />,
-    );
+const fakeUser: User = {
+  uid: "1234",
+  name: "Testy McUser",
+  email: "test@example.com",
+};
 
-    expect(screen.getByText("Gardevoir")).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Gardevoir" })).toBeInTheDocument();
-  });
+//Test to check if Pop up appears when Create New Collection button is clicked
+test('clicking "Create New Collection" shows popup', () => {
+  render(<CollectionPage userData={fakeUser} />);
 
-  /*Test to check if no cards are displayed when there are no cards in the collection*/
-  test("shows empty state when no cards are provided", () => {
-    render(
-      <CardCollection addCard={jest.fn()} cards={[]} removeCard={jest.fn()} />,
-    );
+  expect(screen.queryByText("Mock Create Collection Popup")).toBeNull();
 
-    expect(screen.getByText("No cards added yet!")).toBeInTheDocument();
-  });
+  fireEvent.click(screen.getByText("Create New Collection"));
 
-  /*Test to check if a card is removed from the page when the remove button is clicked*/
-  test("calls removeCard when remove button is clicked", () => {
-    const card = {
-      id: "xy7-54",
-      name: "Gardevoir",
-      imageUrl: "https://example.com/gardevoir.png",
-      set: "Steam Siege",
-      rarity: "Rare",
-    };
-    const removeCard = jest.fn();
+  expect(screen.getByText("Mock Create Collection Popup")).toBeInTheDocument();
+});
 
-    render(
-      <CardCollection
-        addCard={jest.fn()}
-        cards={[card]}
-        removeCard={removeCard}
-      />,
-    );
+//Test to check if Popup can be closed by clicking a mock "x" button, open and closes Popup
+test('clicking "x" hides closes Popup', () => {
+  render(<CollectionPage userData={fakeUser} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+  fireEvent.click(screen.getByText("Create New Collection"));
+  expect(screen.getByText("Mock Create Collection Popup")).toBeInTheDocument();
 
-    expect(removeCard).toHaveBeenCalledTimes(1);
-    expect(removeCard).toHaveBeenCalledWith(expect.objectContaining(card));
-  });
+  fireEvent.click(screen.getByText("x"));
+  expect(screen.queryByText("Mock Create Collection Popup")).toBeNull();
+});
+//Test to check if the page is displaying properly when the user is not signed in
+test("User cannot create collection if not signed in", () => {
+  render(<CollectionPage userData={undefined} />);
+  expect(
+    screen.getByText("Sign in to access Collections!"),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("Create New Collection")).toBeNull();
+  expect(screen.queryByText("Feature in Development!")).toBeNull();
 });
